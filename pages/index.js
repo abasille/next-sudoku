@@ -1,6 +1,152 @@
-import Head from 'next/head'
+import Head from 'next/head';
+import React, { useReducer } from 'react';
+import { GlobalHotKeys } from 'react-hotkeys';
+import sudoku from 'sudoku';
+
+import { Grid } from '../components/grid';
+
+const puzzle = sudoku.makepuzzle();
+const solution = sudoku.solvepuzzle(puzzle);
+const difficulty = sudoku.ratepuzzle(puzzle, 4);
 
 export default function Home() {
+  const initialState = {
+    selectedIndex: undefined,
+    // values: matrix.reduce((values, row) => [...values, ...row], []),
+    puzzle: puzzle.map((v) => (v !== null ? v + 1 : null)),
+    values: puzzle.map((v) => (v !== null ? v + 1 : null)),
+    solution: solution.map((v) => v + 1),
+    difficulty,
+    errors: [],
+  };
+
+  // State machine
+  const reducer = (state, action) => {
+    const defaultSelectedIndex = 40;
+
+    if (
+      ['up', 'down', 'left', 'right'].includes(action.type) &&
+      state.selectedIndex === undefined
+    ) {
+      return {
+        ...state,
+        selectedIndex: defaultSelectedIndex,
+      };
+    }
+
+    switch (action.type) {
+      case 'up':
+        return {
+          ...state,
+          selectedIndex:
+            state.selectedIndex - 9 >= 0
+              ? state.selectedIndex - 9
+              : state.selectedIndex + 72,
+        };
+      case 'down':
+        return {
+          ...state,
+          selectedIndex:
+            state.selectedIndex + 9 >= 80
+              ? state.selectedIndex - 72
+              : state.selectedIndex + 9,
+        };
+      case 'right':
+        return {
+          ...state,
+          selectedIndex:
+            (state.selectedIndex + 1) % 9
+              ? state.selectedIndex + 1
+              : state.selectedIndex - 8,
+        };
+      case 'left':
+        return {
+          ...state,
+          selectedIndex:
+            (state.selectedIndex + 9) % 9
+              ? state.selectedIndex - 1
+              : state.selectedIndex + 8,
+        };
+      case 'click':
+        return {
+          ...state,
+          selectedIndex:
+            action.value === state.selectedIndex ? undefined : action.value,
+        };
+      case 'number':
+        if (state.selectedIndex !== undefined) {
+          const values = [...state.values];
+          // Unset the error for this index
+          const errors = state.errors.filter((i) => i !== state.selectedIndex);
+
+          // Set the value if not an initial value
+          if (state.puzzle[state.selectedIndex] === null) {
+            values[state.selectedIndex] = action.value;
+          }
+
+          return {
+            ...state,
+            errors,
+            values,
+          };
+        }
+        return { ...state };
+      case 'check':
+        return {
+          ...state,
+          errors: state.solution.reduce((errors, solValue, index) => {
+            if (
+              state.values[index] !== null &&
+              state.values[index] !== solValue
+            )
+              errors.push(index);
+            return errors;
+          }, []),
+        };
+      default:
+        throw new Error(`Unknown action type '${action.type}'`);
+    }
+  };
+
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  // Shortkeys
+  const keyMap = {
+    MOVE_UP: 'up',
+    MOVE_DOWN: 'down',
+    MOVE_RIGHT: 'right',
+    MOVE_LEFT: 'left',
+    DEL: 'DEL',
+    1: '1',
+    2: '2',
+    3: '3',
+    4: '4',
+    5: '5',
+    6: '6',
+    7: '7',
+    8: '8',
+    9: '9',
+    CHECK: 'v',
+  };
+
+  const handlers = {
+    MOVE_UP: () => dispatch({ type: 'up' }),
+    MOVE_DOWN: () => dispatch({ type: 'down' }),
+    MOVE_RIGHT: () => dispatch({ type: 'right' }),
+    MOVE_LEFT: () => dispatch({ type: 'left' }),
+    1: () => dispatch({ type: 'number', value: 1 }),
+    2: () => dispatch({ type: 'number', value: 2 }),
+    3: () => dispatch({ type: 'number', value: 3 }),
+    4: () => dispatch({ type: 'number', value: 4 }),
+    5: () => dispatch({ type: 'number', value: 5 }),
+    6: () => dispatch({ type: 'number', value: 6 }),
+    7: () => dispatch({ type: 'number', value: 7 }),
+    8: () => dispatch({ type: 'number', value: 8 }),
+    9: () => dispatch({ type: 'number', value: 9 }),
+    DEL: () => dispatch({ type: 'number', value: null }),
+    CHECK: () => dispatch({ type: 'check' }),
+  };
+
   return (
     <div className="container">
       <Head>
@@ -8,55 +154,23 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
+
       <main>
-        <h1 className="title">
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className="description">
-          Get started by editing <code>pages/index.js</code>
-        </p>
-
-        <div className="grid">
-          <a href="https://nextjs.org/docs" className="card">
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className="card">
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/zeit/next.js/tree/master/examples"
-            className="card"
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://zeit.co/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="card"
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with ZEIT Now.
-            </p>
-          </a>
+        <h1>Sudoku</h1>
+        <div className="controls">
+          <p>Difficulté : {difficulty}</p>
+          <button onClick={() => dispatch({ type: 'check' })}>✔</button>
         </div>
+        <Grid
+          values={state.values}
+          selectedIndex={state.selectedIndex}
+          dispatch={dispatch}
+          state={state}
+        />
       </main>
 
-      <footer>
-        <a
-          href="https://zeit.co?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by <img src="/zeit.svg" alt="ZEIT Logo" />
-        </a>
-      </footer>
+      <footer />
 
       <style jsx>{`
         .container {
@@ -69,29 +183,10 @@ export default function Home() {
         }
 
         main {
-          padding: 5rem 0;
+          padding: 0;
           flex: 1;
           display: flex;
           flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer {
-          width: 100%;
-          height: 100px;
-          border-top: 1px solid #eaeaea;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer img {
-          margin-left: 0.5rem;
-        }
-
-        footer a {
-          display: flex;
           justify-content: center;
           align-items: center;
         }
@@ -128,23 +223,10 @@ export default function Home() {
           font-size: 1.5rem;
         }
 
-        code {
-          background: #fafafa;
-          border-radius: 5px;
-          padding: 0.75rem;
-          font-size: 1.1rem;
-          font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-            DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
-        }
-
-        .grid {
+        .controls {
           display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-wrap: wrap;
-
-          max-width: 800px;
-          margin-top: 3rem;
+          justify-content: space-between;
+          width: 100%;
         }
 
         .card {
@@ -200,5 +282,5 @@ export default function Home() {
         }
       `}</style>
     </div>
-  )
+  );
 }
