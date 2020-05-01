@@ -2,12 +2,18 @@ import Head from 'next/head';
 import React, { useReducer, Fragment } from 'react';
 import sudoku from 'sudoku';
 
+import { STATUS } from '../utils/constants';
+
 import { Grid } from '../components/grid';
+import { Timer } from '../components/Timer';
+import IconPause from '../components/IconPause';
+import IconPlay from '../components/IconPlay';
 
 const puzzle = sudoku.makepuzzle();
 const solution = sudoku.solvepuzzle(puzzle);
 const difficulty = sudoku.ratepuzzle(puzzle, 4);
 
+// TODO Sauvegarder la partie
 export default function Home() {
   const initialState = {
     selectedIndex: undefined,
@@ -17,11 +23,15 @@ export default function Home() {
     solution: solution.map((v) => v + 1),
     difficulty,
     errors: [],
+    status: STATUS.PENDING,
+    elapsedTime: 0,
   };
 
   // State machine
   const reducer = (state, action) => {
     const defaultSelectedIndex = 40;
+
+    // console.log(action);
 
     if (
       ['up', 'down', 'left', 'right'].includes(action.type) &&
@@ -34,6 +44,16 @@ export default function Home() {
     }
 
     switch (action.type) {
+      case 'play':
+        return {
+          ...state,
+          status: STATUS.PLAYING,
+        };
+      case 'pause':
+        return {
+          ...state,
+          status: STATUS.PAUSED,
+        };
       case 'up':
         return {
           ...state,
@@ -102,12 +122,19 @@ export default function Home() {
             return errors;
           }, []),
         };
+      case 'setElapsedTime':
+        return { ...state, elapsedTime: action.value };
       default:
         throw new Error(`Unknown action type '${action.type}'`);
     }
   };
 
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  const elapsedTimeCb = (elapsedTime) =>
+    typeof elapsedTime === 'number'
+      ? dispatch({ type: 'setElapsedTime', value: elapsedTime })
+      : state.elapsedTime;
 
   return (
     <div className="container">
@@ -116,18 +143,47 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>
+      <header>
         <h1>Sudoku</h1>
-        <div className="controls">
-          <p>Difficulté : {difficulty}</p>
-          <button onClick={() => dispatch({ type: 'check' })}>✔</button>
-        </div>
-        <Grid
-          values={state.values}
-          selectedIndex={state.selectedIndex}
-          dispatch={dispatch}
-          state={state}
+        <Timer
+          paused={state.status !== STATUS.PLAYING}
+          elapsedTimeCb={elapsedTimeCb}
         />
+        {[STATUS.PENDING, STATUS.PAUSED].includes(state.status) && (
+          <button
+            className="btn-icon"
+            onClick={() => dispatch({ type: 'play' })}
+            title="Jouer"
+          >
+            <IconPlay />
+          </button>
+        )}
+        {state.status === STATUS.PLAYING && (
+          <button
+            className="btn-icon"
+            onClick={() => dispatch({ type: 'pause' })}
+            title="Mettre en pause"
+          >
+            <IconPause />
+          </button>
+        )}
+      </header>
+      <main>
+        {state.status === STATUS.PLAYING && (
+          <Fragment>
+            <div className="controls">
+              <p>Difficulté : {difficulty}</p>
+              <button
+                className="btn-icon"
+                onClick={() => dispatch({ type: 'check' })}
+                title="Vérifier la grille"
+              >
+                ✔
+              </button>
+            </div>
+            <Grid values={state.values} dispatch={dispatch} state={state} />
+          </Fragment>
+        )}
       </main>
 
       <footer />
@@ -138,8 +194,16 @@ export default function Home() {
           padding: 0 0.5rem;
           display: flex;
           flex-direction: column;
-          justify-content: center;
+          justify-content: space-between;
           align-items: center;
+        }
+
+        header {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
         }
 
         main {
@@ -155,6 +219,11 @@ export default function Home() {
           display: flex;
           justify-content: space-between;
           width: 100%;
+        }
+
+        .btn-icon {
+          width: 50px;
+          height: 50px;
         }
       `}</style>
 
