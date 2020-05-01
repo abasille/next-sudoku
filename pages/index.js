@@ -1,6 +1,5 @@
 import Head from 'next/head';
-import React, { useReducer } from 'react';
-import { GlobalHotKeys } from 'react-hotkeys';
+import React, { useReducer, Fragment } from 'react';
 import sudoku from 'sudoku';
 
 import { Grid } from '../components/grid';
@@ -110,51 +109,12 @@ export default function Home() {
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  // Shortkeys
-  const keyMap = {
-    MOVE_UP: 'up',
-    MOVE_DOWN: 'down',
-    MOVE_RIGHT: 'right',
-    MOVE_LEFT: 'left',
-    DEL: 'DEL',
-    1: '1',
-    2: '2',
-    3: '3',
-    4: '4',
-    5: '5',
-    6: '6',
-    7: '7',
-    8: '8',
-    9: '9',
-    CHECK: 'v',
-  };
-
-  const handlers = {
-    MOVE_UP: () => dispatch({ type: 'up' }),
-    MOVE_DOWN: () => dispatch({ type: 'down' }),
-    MOVE_RIGHT: () => dispatch({ type: 'right' }),
-    MOVE_LEFT: () => dispatch({ type: 'left' }),
-    1: () => dispatch({ type: 'number', value: 1 }),
-    2: () => dispatch({ type: 'number', value: 2 }),
-    3: () => dispatch({ type: 'number', value: 3 }),
-    4: () => dispatch({ type: 'number', value: 4 }),
-    5: () => dispatch({ type: 'number', value: 5 }),
-    6: () => dispatch({ type: 'number', value: 6 }),
-    7: () => dispatch({ type: 'number', value: 7 }),
-    8: () => dispatch({ type: 'number', value: 8 }),
-    9: () => dispatch({ type: 'number', value: 9 }),
-    DEL: () => dispatch({ type: 'number', value: null }),
-    CHECK: () => dispatch({ type: 'check' }),
-  };
-
   return (
     <div className="container">
       <Head>
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
 
       <main>
         <h1>Sudoku</h1>
@@ -191,79 +151,10 @@ export default function Home() {
           align-items: center;
         }
 
-        a {
-          color: inherit;
-          text-decoration: none;
-        }
-
-        .title a {
-          color: #0070f3;
-          text-decoration: none;
-        }
-
-        .title a:hover,
-        .title a:focus,
-        .title a:active {
-          text-decoration: underline;
-        }
-
-        .title {
-          margin: 0;
-          line-height: 1.15;
-          font-size: 4rem;
-        }
-
-        .title,
-        .description {
-          text-align: center;
-        }
-
-        .description {
-          line-height: 1.5;
-          font-size: 1.5rem;
-        }
-
         .controls {
           display: flex;
           justify-content: space-between;
           width: 100%;
-        }
-
-        .card {
-          margin: 1rem;
-          flex-basis: 45%;
-          padding: 1.5rem;
-          text-align: left;
-          color: inherit;
-          text-decoration: none;
-          border: 1px solid #eaeaea;
-          border-radius: 10px;
-          transition: color 0.15s ease, border-color 0.15s ease;
-        }
-
-        .card:hover,
-        .card:focus,
-        .card:active {
-          color: #0070f3;
-          border-color: #0070f3;
-        }
-
-        .card h3 {
-          margin: 0 0 1rem 0;
-          font-size: 1.5rem;
-        }
-
-        .card p {
-          margin: 0;
-          font-size: 1.25rem;
-          line-height: 1.5;
-        }
-
-        @media (max-width: 600px) {
-          .grid {
-            width: 100%;
-            flex-direction: column;
-          }
         }
       `}</style>
 
