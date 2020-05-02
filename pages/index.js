@@ -4,8 +4,8 @@ import sudoku from 'sudoku';
 
 import { STATUS } from '../utils/constants';
 
-import { Grid } from '../components/grid';
-import { Timer } from '../components/Timer';
+import Grid from '../components/Grid';
+import Timer from '../components/Timer';
 import IconPause from '../components/IconPause';
 import IconPlay from '../components/IconPlay';
 
@@ -14,7 +14,7 @@ const solution = sudoku.solvepuzzle(puzzle);
 const difficulty = sudoku.ratepuzzle(puzzle, 4);
 
 // TODO Sauvegarder la partie
-export default function Home() {
+const Home = () => {
   const initialState = {
     selectedIndex: undefined,
     // values: matrix.reduce((values, row) => [...values, ...row], []),
@@ -250,4 +250,6 @@ export default function Home() {
       `}</style>
     </div>
   );
-}
+};
+
+export default Home;

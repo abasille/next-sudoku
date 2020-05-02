@@ -1,9 +1,9 @@
 import React from 'react';
 import { GlobalHotKeys } from 'react-hotkeys';
 
-import { Case } from './case';
+import Case from './Case';
 
-export const Grid = ({ values, dispatch, state }) => {
+const Grid = ({ values, dispatch, state }) => {
   // Shortkeys
   const keyMap = {
     MOVE_UP: 'up',
@@ -66,3 +66,5 @@ export const Grid = ({ values, dispatch, state }) => {
     </div>
   );
 };
+
+export default Grid;

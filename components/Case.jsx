@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import classnames from 'classnames';
 
-export const Case = ({ value, index, dispatch, state }) => {
+const Case = ({ value, index, dispatch, state }) => {
   const isSelected = state.selectedIndex === index;
   const onCaseClicked = (index) => {
     dispatch({ type: 'click', value: index });
@@ -64,3 +64,5 @@ export const Case = ({ value, index, dispatch, state }) => {
     </Fragment>
   );
 };
+
+export default Case;

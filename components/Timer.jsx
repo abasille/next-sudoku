@@ -13,7 +13,7 @@ const parseTimeMs = (timeMs) => {
   return { h, m, s };
 };
 
-export const Timer = ({ paused = false, elapsedTimeCb }) => {
+const Timer = ({ paused = false, elapsedTimeCb }) => {
   useTimer({ periodMs: 1000, paused, elapsedTimeCb });
 
   const { h, m, s } = parseTimeMs(elapsedTimeCb());
@@ -24,3 +24,5 @@ export const Timer = ({ paused = false, elapsedTimeCb }) => {
     </span>
   );
 };
+
+export default Timer;
