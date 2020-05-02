@@ -206,13 +206,19 @@ export default function Home() {
           width: 100%;
         }
 
+        h1 {
+          margin-block-start: 0;
+          margin-block-end: 0;
+        }
+
         main {
           padding: 0;
           flex: 1;
           display: flex;
           flex-direction: column;
-          justify-content: center;
+          justify-content: flex-start;
           align-items: center;
+          width: 100%;
         }
 
         .controls {
@@ -222,8 +228,8 @@ export default function Home() {
         }
 
         .btn-icon {
-          width: 50px;
-          height: 50px;
+          width: 2rem;
+          height: 2rem;
         }
       `}</style>
 
@@ -235,6 +241,7 @@ export default function Home() {
           font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
             Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
             sans-serif;
+          font-size: 16px;
         }
 
         * {

@@ -58,10 +58,9 @@ export const Grid = ({ values, dispatch, state }) => {
       <style jsx>{`
         .grid {
           display: grid;
-          grid-template-columns: repeat(9, 70px);
-          grid-template-rows: repeat(9, 70px);
-          padding: 10px;
+          grid-template-columns: repeat(9, 1fr);
           width: 100%;
+          max-width: 500px;
         }
       `}</style>
     </div>

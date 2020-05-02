@@ -36,11 +36,17 @@ export const Case = ({ value, index, dispatch, state }) => {
         .case {
           background-color: #e0e0e0;
           border: 1px solid #fff;
-          padding: 20px;
-          font-size: 30px;
+          font-size: 1.5rem;
           text-align: center;
           cursor: pointer;
           user-select: none;
+        }
+        .case::before {
+          content: '';
+          display: inline-block;
+          width: 0;
+          height: 0;
+          padding-bottom: calc(100% - 6px);
         }
         .is-odd {
           background-color: #bed3be;
