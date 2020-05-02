@@ -5,9 +5,12 @@ import sudoku from 'sudoku';
 import { STATUS } from '../utils/constants';
 
 import Grid from '../components/Grid';
+import Keyboard from '../components/Keyboard';
 import Timer from '../components/Timer';
 import IconPause from '../components/IconPause';
 import IconPlay from '../components/IconPlay';
+
+import { container } from '../theme';
 
 const puzzle = sudoku.makepuzzle();
 const solution = sudoku.solvepuzzle(puzzle);
@@ -182,6 +185,7 @@ const Home = () => {
               </button>
             </div>
             <Grid values={state.values} dispatch={dispatch} state={state} />
+            <Keyboard dispatch={dispatch} />
           </Fragment>
         )}
       </main>
@@ -192,10 +196,12 @@ const Home = () => {
         .container {
           min-height: 100vh;
           padding: 0 0.5rem;
+          margin: auto;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
           align-items: center;
+          max-width: ${container.maxWidth};
         }
 
         header {

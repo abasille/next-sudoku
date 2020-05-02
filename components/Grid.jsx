@@ -3,6 +3,8 @@ import { GlobalHotKeys } from 'react-hotkeys';
 
 import Case from './Case';
 
+import { container } from '../theme';
+
 const Grid = ({ values, dispatch, state }) => {
   // Shortkeys
   const keyMap = {
@@ -60,7 +62,7 @@ const Grid = ({ values, dispatch, state }) => {
           display: grid;
           grid-template-columns: repeat(9, 1fr);
           width: 100%;
-          max-width: 500px;
+          max-width: ${container.maxWidth};
         }
       `}</style>
     </div>
