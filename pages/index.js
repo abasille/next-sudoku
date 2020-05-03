@@ -1,135 +1,30 @@
 import Head from 'next/head';
 import React, { useReducer, Fragment } from 'react';
-import sudoku from 'sudoku';
 
-import { STATUS } from '../utils/constants';
+import { DIFFICULTY_OPTIONS, STATUS } from '../utils/constants';
 
 import Grid from '../components/Grid';
 import Keyboard from '../components/Keyboard';
 import Timer from '../components/Timer';
 import IconPause from '../components/IconPause';
 import IconPlay from '../components/IconPlay';
+import IconStop from '../components/IconStop';
 
 import { container } from '../theme';
-
-const puzzle = sudoku.makepuzzle();
-const solution = sudoku.solvepuzzle(puzzle);
-const difficulty = sudoku.ratepuzzle(puzzle, 4);
+import { reducer } from '../state';
 
 // TODO Sauvegarder la partie
 const Home = () => {
   const initialState = {
     selectedIndex: undefined,
     // values: matrix.reduce((values, row) => [...values, ...row], []),
-    puzzle: puzzle.map((v) => (v !== null ? v + 1 : null)),
-    values: puzzle.map((v) => (v !== null ? v + 1 : null)),
-    solution: solution.map((v) => v + 1),
-    difficulty,
+    puzzle: [],
+    values: [],
+    solution: [],
+    rate: undefined,
     errors: [],
     status: STATUS.PENDING,
     elapsedTime: 0,
-  };
-
-  // State machine
-  const reducer = (state, action) => {
-    const defaultSelectedIndex = 40;
-
-    // console.log(action);
-
-    if (
-      ['up', 'down', 'left', 'right'].includes(action.type) &&
-      state.selectedIndex === undefined
-    ) {
-      return {
-        ...state,
-        selectedIndex: defaultSelectedIndex,
-      };
-    }
-
-    switch (action.type) {
-      case 'play':
-        return {
-          ...state,
-          status: STATUS.PLAYING,
-        };
-      case 'pause':
-        return {
-          ...state,
-          status: STATUS.PAUSED,
-        };
-      case 'up':
-        return {
-          ...state,
-          selectedIndex:
-            state.selectedIndex - 9 >= 0
-              ? state.selectedIndex - 9
-              : state.selectedIndex + 72,
-        };
-      case 'down':
-        return {
-          ...state,
-          selectedIndex:
-            state.selectedIndex + 9 >= 80
-              ? state.selectedIndex - 72
-              : state.selectedIndex + 9,
-        };
-      case 'right':
-        return {
-          ...state,
-          selectedIndex:
-            (state.selectedIndex + 1) % 9
-              ? state.selectedIndex + 1
-              : state.selectedIndex - 8,
-        };
-      case 'left':
-        return {
-          ...state,
-          selectedIndex:
-            (state.selectedIndex + 9) % 9
-              ? state.selectedIndex - 1
-              : state.selectedIndex + 8,
-        };
-      case 'click':
-        return {
-          ...state,
-          selectedIndex:
-            action.value === state.selectedIndex ? undefined : action.value,
-        };
-      case 'number':
-        if (state.selectedIndex !== undefined) {
-          const values = [...state.values];
-          // Unset the error for this index
-          const errors = state.errors.filter((i) => i !== state.selectedIndex);
-
-          // Set the value if not an initial value
-          if (state.puzzle[state.selectedIndex] === null) {
-            values[state.selectedIndex] = action.value;
-          }
-
-          return {
-            ...state,
-            errors,
-            values,
-          };
-        }
-        return { ...state };
-      case 'check':
-        return {
-          ...state,
-          errors: state.solution.reduce((errors, solValue, index) => {
-            if (
-              state.values[index] !== null &&
-              state.values[index] !== solValue
-            )
-              errors.push(index);
-            return errors;
-          }, []),
-        };
-      case 'setElapsedTime':
-        return { ...state, elapsedTime: action.value };
-      default:
-        throw new Error(`Unknown action type '${action.type}'`);
-    }
   };
 
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -148,11 +43,22 @@ const Home = () => {
 
       <header>
         <h1>Sudoku</h1>
-        <Timer
-          paused={state.status !== STATUS.PLAYING}
-          elapsedTimeCb={elapsedTimeCb}
-        />
-        {[STATUS.PENDING, STATUS.PAUSED].includes(state.status) && (
+        {state.status === STATUS.PLAYING && (
+          <button
+            className="btn-icon"
+            onClick={() => dispatch({ type: 'stop' })}
+            title="Arrêter"
+          >
+            <IconStop />
+          </button>
+        )}
+        {[STATUS.PAUSED, STATUS.PLAYING].includes(state.status) && (
+          <Timer
+            paused={state.status !== STATUS.PLAYING}
+            elapsedTimeCb={elapsedTimeCb}
+          />
+        )}
+        {state.status === STATUS.PAUSED && (
           <button
             className="btn-icon"
             onClick={() => dispatch({ type: 'play' })}
@@ -172,10 +78,23 @@ const Home = () => {
         )}
       </header>
       <main>
+        {state.status === STATUS.PENDING && (
+          <Fragment>
+            <p>Choisissez un niveau de difficulté</p>
+            {DIFFICULTY_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                onClick={() => dispatch({ type: 'start', value: option.value })}
+              >
+                {option.label}
+              </button>
+            ))}
+          </Fragment>
+        )}
         {state.status === STATUS.PLAYING && (
           <Fragment>
             <div className="controls">
-              <p>Difficulté : {difficulty}</p>
+              <p>Difficulté : {state.rate}</p>
               <button
                 className="btn-icon"
                 onClick={() => dispatch({ type: 'check' })}
@@ -184,13 +103,11 @@ const Home = () => {
                 ✔
               </button>
             </div>
-            <Grid values={state.values} dispatch={dispatch} state={state} />
+            <Grid dispatch={dispatch} state={state} />
             <Keyboard dispatch={dispatch} />
           </Fragment>
         )}
       </main>
-
-      <footer />
 
       <style jsx>{`
         .container {

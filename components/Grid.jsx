@@ -5,7 +5,7 @@ import Case from './Case';
 
 import { container } from '../theme';
 
-const Grid = ({ values, dispatch, state }) => {
+const Grid = ({ dispatch, state }) => {
   // Shortkeys
   const keyMap = {
     MOVE_UP: 'up',
@@ -47,7 +47,7 @@ const Grid = ({ values, dispatch, state }) => {
     <div className="grid">
       <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
 
-      {values.map((value, index) => (
+      {state.values.map((value, index) => (
         <Case
           key={index}
           value={value}
