@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { ActionType } from '../state';
+
 const Keyboard = ({ dispatch }) => {
   return (
     <div className="keyboard">
@@ -8,12 +10,14 @@ const Keyboard = ({ dispatch }) => {
         .map((v) => (
           <button
             key={v}
-            onClick={() => dispatch({ type: 'number', value: v })}
+            onClick={() => dispatch({ type: ActionType.Number, value: v })}
           >
             {v}
           </button>
         ))}
-      <button onClick={() => dispatch({ type: 'number', value: null })}>
+      <button
+        onClick={() => dispatch({ type: ActionType.Number, value: null })}
+      >
         🗑
       </button>
       <style jsx>{`

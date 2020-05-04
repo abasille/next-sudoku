@@ -4,6 +4,7 @@ import { GlobalHotKeys } from 'react-hotkeys';
 import Case from './Case';
 
 import { container } from '../theme';
+import { ActionType } from '../state';
 
 const Grid = ({ dispatch, state }) => {
   // Shortkeys
@@ -26,21 +27,21 @@ const Grid = ({ dispatch, state }) => {
   };
 
   const handlers = {
-    MOVE_UP: () => dispatch({ type: 'up' }),
-    MOVE_DOWN: () => dispatch({ type: 'down' }),
-    MOVE_RIGHT: () => dispatch({ type: 'right' }),
-    MOVE_LEFT: () => dispatch({ type: 'left' }),
-    1: () => dispatch({ type: 'number', value: 1 }),
-    2: () => dispatch({ type: 'number', value: 2 }),
-    3: () => dispatch({ type: 'number', value: 3 }),
-    4: () => dispatch({ type: 'number', value: 4 }),
-    5: () => dispatch({ type: 'number', value: 5 }),
-    6: () => dispatch({ type: 'number', value: 6 }),
-    7: () => dispatch({ type: 'number', value: 7 }),
-    8: () => dispatch({ type: 'number', value: 8 }),
-    9: () => dispatch({ type: 'number', value: 9 }),
-    DEL: () => dispatch({ type: 'number', value: null }),
-    CHECK: () => dispatch({ type: 'check' }),
+    MOVE_UP: () => dispatch({ type: ActionType.Up }),
+    MOVE_DOWN: () => dispatch({ type: ActionType.Down }),
+    MOVE_RIGHT: () => dispatch({ type: ActionType.Right }),
+    MOVE_LEFT: () => dispatch({ type: ActionType.Left }),
+    1: () => dispatch({ type: ActionType.Number, value: 1 }),
+    2: () => dispatch({ type: ActionType.Number, value: 2 }),
+    3: () => dispatch({ type: ActionType.Number, value: 3 }),
+    4: () => dispatch({ type: ActionType.Number, value: 4 }),
+    5: () => dispatch({ type: ActionType.Number, value: 5 }),
+    6: () => dispatch({ type: ActionType.Number, value: 6 }),
+    7: () => dispatch({ type: ActionType.Number, value: 7 }),
+    8: () => dispatch({ type: ActionType.Number, value: 8 }),
+    9: () => dispatch({ type: ActionType.Number, value: 9 }),
+    DEL: () => dispatch({ type: ActionType.Number, value: null }),
+    CHECK: () => dispatch({ type: ActionType.Check }),
   };
 
   return (

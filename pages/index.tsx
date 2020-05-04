@@ -11,7 +11,7 @@ import IconPlay from '../components/IconPlay';
 import IconStop from '../components/IconStop';
 
 import { container } from '../theme';
-import { reducer } from '../state';
+import { reducer, ActionType } from '../state';
 
 // TODO Sauvegarder la partie
 const Home = () => {
@@ -31,7 +31,7 @@ const Home = () => {
 
   const elapsedTimeCb = (elapsedTime) =>
     typeof elapsedTime === 'number'
-      ? dispatch({ type: 'setElapsedTime', value: elapsedTime })
+      ? dispatch({ type: ActionType.SetElapsedTime, value: elapsedTime })
       : state.elapsedTime;
 
   return (
@@ -46,7 +46,7 @@ const Home = () => {
         {state.status === STATUS.PLAYING && (
           <button
             className="btn-icon"
-            onClick={() => dispatch({ type: 'stop' })}
+            onClick={() => dispatch({ type: ActionType.Stop })}
             title="Arrêter"
           >
             <IconStop />
@@ -61,7 +61,7 @@ const Home = () => {
         {state.status === STATUS.PAUSED && (
           <button
             className="btn-icon"
-            onClick={() => dispatch({ type: 'play' })}
+            onClick={() => dispatch({ type: ActionType.Play })}
             title="Jouer"
           >
             <IconPlay />
@@ -70,7 +70,7 @@ const Home = () => {
         {state.status === STATUS.PLAYING && (
           <button
             className="btn-icon"
-            onClick={() => dispatch({ type: 'pause' })}
+            onClick={() => dispatch({ type: ActionType.Pause })}
             title="Mettre en pause"
           >
             <IconPause />
@@ -84,7 +84,9 @@ const Home = () => {
             {DIFFICULTY_OPTIONS.map((option) => (
               <button
                 key={option.value}
-                onClick={() => dispatch({ type: 'start', value: option.value })}
+                onClick={() =>
+                  dispatch({ type: ActionType.Start, value: option.value })
+                }
               >
                 {option.label}
               </button>
@@ -97,7 +99,7 @@ const Home = () => {
               <p>Difficulté : {state.rate}</p>
               <button
                 className="btn-icon"
-                onClick={() => dispatch({ type: 'check' })}
+                onClick={() => dispatch({ type: ActionType.Check })}
                 title="Vérifier la grille"
               >
                 ✔

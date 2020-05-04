@@ -1,13 +1,54 @@
 import { STATUS } from './utils/constants';
 import { generateSudoku } from './utils/generator';
 
-export const reducer = (state, action) => {
-  const defaultSelectedIndex = 40;
+export enum ActionType {
+  Start = 'Start',
+  Stop = 'Stop',
+  Play = 'Play',
+  Pause = 'Pause',
+  Up = 'Up',
+  Down = 'Down',
+  Left = 'Left',
+  Right = 'Right',
+  Click = 'Click',
+  Number = 'Number',
+  Check = 'Check',
+  SetElapsedTime = 'SetElapsedTime',
+}
+
+interface State {
+  selectedIndex: number;
+  puzzle: number[];
+  values: number[];
+  solution: number[];
+  rate: number;
+  errors: number[];
+  status: string;
+  elapsedTime: number;
+}
+
+interface Action {
+  type: ActionType;
+  value?: any;
+}
+
+interface NumberAction {
+  type: ActionType.Number;
+  value: number;
+}
+
+export const reducer = (state: State, action: Action | NumberAction): State => {
+  const defaultSelectedIndex: number = 40;
 
   // console.log(action);
 
   if (
-    ['up', 'down', 'left', 'right'].includes(action.type) &&
+    [
+      ActionType.Up,
+      ActionType.Down,
+      ActionType.Left,
+      ActionType.Right,
+    ].includes(action.type) &&
     state.selectedIndex === undefined
   ) {
     return {
@@ -17,7 +58,7 @@ export const reducer = (state, action) => {
   }
 
   switch (action.type) {
-    case 'start':
+    case ActionType.Start:
       const { puzzle, solution, rate } = generateSudoku(action.value);
 
       return {
@@ -28,12 +69,12 @@ export const reducer = (state, action) => {
         rate,
         status: STATUS.PLAYING,
       };
-    case 'play':
+    case ActionType.Play:
       return {
         ...state,
         status: STATUS.PLAYING,
       };
-    case 'stop':
+    case ActionType.Stop:
       return {
         ...state,
         status: STATUS.PENDING,
@@ -42,12 +83,12 @@ export const reducer = (state, action) => {
         values: [],
         rate: undefined,
       };
-    case 'pause':
+    case ActionType.Pause:
       return {
         ...state,
         status: STATUS.PAUSED,
       };
-    case 'up':
+    case ActionType.Up:
       return {
         ...state,
         selectedIndex:
@@ -55,7 +96,7 @@ export const reducer = (state, action) => {
             ? state.selectedIndex - 9
             : state.selectedIndex + 72,
       };
-    case 'down':
+    case ActionType.Down:
       return {
         ...state,
         selectedIndex:
@@ -63,7 +104,7 @@ export const reducer = (state, action) => {
             ? state.selectedIndex - 72
             : state.selectedIndex + 9,
       };
-    case 'right':
+    case ActionType.Right:
       return {
         ...state,
         selectedIndex:
@@ -71,7 +112,7 @@ export const reducer = (state, action) => {
             ? state.selectedIndex + 1
             : state.selectedIndex - 8,
       };
-    case 'left':
+    case ActionType.Left:
       return {
         ...state,
         selectedIndex:
@@ -79,13 +120,13 @@ export const reducer = (state, action) => {
             ? state.selectedIndex - 1
             : state.selectedIndex + 8,
       };
-    case 'click':
+    case ActionType.Click:
       return {
         ...state,
         selectedIndex:
           action.value === state.selectedIndex ? undefined : action.value,
       };
-    case 'number':
+    case ActionType.Number:
       if (state.selectedIndex !== undefined) {
         const values = [...state.values];
         // Unset the error for this index
@@ -103,7 +144,7 @@ export const reducer = (state, action) => {
         };
       }
       return { ...state };
-    case 'check':
+    case ActionType.Check:
       return {
         ...state,
         errors: state.solution.reduce((errors, solValue, index) => {
@@ -112,9 +153,12 @@ export const reducer = (state, action) => {
           return errors;
         }, []),
       };
-    case 'setElapsedTime':
+    case ActionType.SetElapsedTime:
       return { ...state, elapsedTime: action.value };
+
     default:
-      throw new Error(`Unknown action type '${action.type}'`);
+      console.error(`Unknown action type '${JSON.stringify(action)}'`);
+
+      return { ...state };
   }
 };

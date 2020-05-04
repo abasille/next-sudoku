@@ -1,10 +1,12 @@
 import React, { Fragment } from 'react';
 import classnames from 'classnames';
 
+import { ActionType } from '../state';
+
 const Case = ({ value, index, dispatch, state }) => {
   const isSelected = state.selectedIndex === index;
   const onCaseClicked = (index) => {
-    dispatch({ type: 'click', value: index });
+    dispatch({ type: ActionType.Click, value: index });
   };
   const getSquareIndexes = (offset) =>
     [0, 1, 2, 9, 10, 11, 18, 19, 20].map((i) => i + offset);
