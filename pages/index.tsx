@@ -13,11 +13,18 @@ import IconStop from '../components/IconStop';
 import { container } from '../theme';
 import { reducer, ActionType } from '../state';
 
-// TODO Sauvegarder la partie
 const Home = () => {
-  const initialState = {
+  const stateFromLocalStorage =
+    typeof window === 'object'
+      ? window.localStorage.getItem('state')
+      : undefined;
+
+  const stateFromLocalStorageObject = stateFromLocalStorage
+    ? JSON.parse(stateFromLocalStorage)
+    : undefined;
+
+  const initialState = stateFromLocalStorageObject || {
     selectedIndex: undefined,
-    // values: matrix.reduce((values, row) => [...values, ...row], []),
     puzzle: [],
     values: [],
     solution: [],

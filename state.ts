@@ -39,6 +39,7 @@ interface NumberAction {
 
 export const reducer = (state: State, action: Action | NumberAction): State => {
   const defaultSelectedIndex: number = 40;
+  let newState: State = { ...state };
 
   // console.log(action);
 
@@ -49,116 +50,133 @@ export const reducer = (state: State, action: Action | NumberAction): State => {
       ActionType.Left,
       ActionType.Right,
     ].includes(action.type) &&
-    state.selectedIndex === undefined
+    newState.selectedIndex === undefined
   ) {
-    return {
-      ...state,
-      selectedIndex: defaultSelectedIndex,
-    };
+    newState.selectedIndex = defaultSelectedIndex;
   }
 
   switch (action.type) {
     case ActionType.Start:
       const { puzzle, solution, rate } = generateSudoku(action.value);
 
-      return {
-        ...state,
+      newState = {
+        ...newState,
         puzzle,
         values: [...puzzle],
         solution,
         rate,
         status: STATUS.PLAYING,
       };
+      break;
     case ActionType.Play:
-      return {
-        ...state,
-        status: STATUS.PLAYING,
-      };
+      newState.status = STATUS.PLAYING;
+      break;
     case ActionType.Stop:
-      return {
-        ...state,
+      newState = {
+        ...newState,
         status: STATUS.PENDING,
         solution: [],
         puzzle: [],
         values: [],
         rate: undefined,
       };
+      break;
     case ActionType.Pause:
-      return {
-        ...state,
+      newState = {
+        ...newState,
         status: STATUS.PAUSED,
       };
+      break;
     case ActionType.Up:
-      return {
-        ...state,
+      newState = {
+        ...newState,
         selectedIndex:
-          state.selectedIndex - 9 >= 0
-            ? state.selectedIndex - 9
-            : state.selectedIndex + 72,
+          newState.selectedIndex - 9 >= 0
+            ? newState.selectedIndex - 9
+            : newState.selectedIndex + 72,
       };
+      break;
     case ActionType.Down:
-      return {
-        ...state,
+      newState = {
+        ...newState,
         selectedIndex:
-          state.selectedIndex + 9 >= 80
-            ? state.selectedIndex - 72
-            : state.selectedIndex + 9,
+          newState.selectedIndex + 9 >= 80
+            ? newState.selectedIndex - 72
+            : newState.selectedIndex + 9,
       };
+      break;
     case ActionType.Right:
-      return {
-        ...state,
+      newState = {
+        ...newState,
         selectedIndex:
-          (state.selectedIndex + 1) % 9
-            ? state.selectedIndex + 1
-            : state.selectedIndex - 8,
+          (newState.selectedIndex + 1) % 9
+            ? newState.selectedIndex + 1
+            : newState.selectedIndex - 8,
       };
+      break;
     case ActionType.Left:
-      return {
-        ...state,
+      newState = {
+        ...newState,
         selectedIndex:
-          (state.selectedIndex + 9) % 9
-            ? state.selectedIndex - 1
-            : state.selectedIndex + 8,
+          (newState.selectedIndex + 9) % 9
+            ? newState.selectedIndex - 1
+            : newState.selectedIndex + 8,
       };
+      break;
     case ActionType.Click:
-      return {
-        ...state,
+      newState = {
+        ...newState,
         selectedIndex:
-          action.value === state.selectedIndex ? undefined : action.value,
+          action.value === newState.selectedIndex ? undefined : action.value,
       };
+      break;
     case ActionType.Number:
-      if (state.selectedIndex !== undefined) {
-        const values = [...state.values];
+      if (newState.selectedIndex !== undefined) {
+        const values = [...newState.values];
         // Unset the error for this index
-        const errors = state.errors.filter((i) => i !== state.selectedIndex);
+        const errors = newState.errors.filter(
+          (i) => i !== newState.selectedIndex
+        );
 
         // Set the value if not an initial value
-        if (state.puzzle[state.selectedIndex] === null) {
-          values[state.selectedIndex] = action.value;
+        if (newState.puzzle[newState.selectedIndex] === null) {
+          values[newState.selectedIndex] = action.value;
         }
 
-        return {
-          ...state,
+        newState = {
+          ...newState,
           errors,
           values,
         };
       }
-      return { ...state };
+      break;
     case ActionType.Check:
-      return {
-        ...state,
-        errors: state.solution.reduce((errors, solValue, index) => {
-          if (state.values[index] !== null && state.values[index] !== solValue)
+      newState = {
+        ...newState,
+        errors: newState.solution.reduce((errors, solValue, index) => {
+          if (
+            newState.values[index] !== null &&
+            newState.values[index] !== solValue
+          )
             errors.push(index);
           return errors;
         }, []),
       };
+      break;
     case ActionType.SetElapsedTime:
-      return { ...state, elapsedTime: action.value };
+      newState = {
+        ...newState,
+        elapsedTime: action.value,
+      };
+      break;
 
     default:
       console.error(`Unknown action type '${JSON.stringify(action)}'`);
-
-      return { ...state };
+      break;
   }
+
+  // Save the new state in localstorage
+  window.localStorage.setItem('state', JSON.stringify(newState));
+
+  return newState;
 };
