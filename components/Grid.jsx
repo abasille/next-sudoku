@@ -24,6 +24,7 @@ const Grid = ({ dispatch, state }) => {
     8: '8',
     9: '9',
     CHECK: 'v',
+    SHOW_ONE_CLUE: 'h',
   };
 
   const handlers = {
@@ -42,6 +43,7 @@ const Grid = ({ dispatch, state }) => {
     9: () => dispatch({ type: ActionType.Number, value: 9 }),
     DEL: () => dispatch({ type: ActionType.Number, value: null }),
     CHECK: () => dispatch({ type: ActionType.Check }),
+    SHOW_ONE_CLUE: () => dispatch({ type: ActionType.ShowOneMoreClue }),
   };
 
   return (

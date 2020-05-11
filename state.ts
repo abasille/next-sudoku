@@ -1,5 +1,9 @@
 import { STATUS } from './utils/constants';
-import { generateSudoku } from './utils/generator';
+import {
+  generateSudoku,
+  buildPossibleNumberGrid,
+  ICasePossibilities,
+} from './utils/generator';
 
 export enum ActionType {
   Start = 'Start',
@@ -14,13 +18,15 @@ export enum ActionType {
   Number = 'Number',
   Check = 'Check',
   SetElapsedTime = 'SetElapsedTime',
+  ShowOneMoreClue = 'ShowOneMoreClue',
 }
 
-interface State {
+export interface State {
   selectedIndex: number;
-  puzzle: number[];
-  values: number[];
-  solution: number[];
+  puzzle: number[]; // Initial grid
+  values: number[]; // Current grid
+  solution: number[]; // Solution grid
+  possibleNumbersGrid: ICasePossibilities[]; // Possible numbers per case
   rate: number;
   errors: number[];
   status: string;
@@ -63,9 +69,14 @@ export const reducer = (state: State, action: Action | NumberAction): State => {
         ...newState,
         puzzle,
         values: [...puzzle],
+        possibleNumbersGrid: buildPossibleNumberGrid({
+          gridValues: [...puzzle],
+          puzzle,
+        }),
         solution,
         rate,
         status: STATUS.PLAYING,
+        elapsedTime: 0,
       };
       break;
     case ActionType.Play:
@@ -100,7 +111,7 @@ export const reducer = (state: State, action: Action | NumberAction): State => {
       newState = {
         ...newState,
         selectedIndex:
-          newState.selectedIndex + 9 >= 80
+          newState.selectedIndex + 9 >= 81
             ? newState.selectedIndex - 72
             : newState.selectedIndex + 9,
       };
@@ -145,6 +156,10 @@ export const reducer = (state: State, action: Action | NumberAction): State => {
 
         newState = {
           ...newState,
+          possibleNumbersGrid: buildPossibleNumberGrid({
+            gridValues: values,
+            puzzle: newState.puzzle,
+          }),
           errors,
           values,
         };
@@ -168,6 +183,23 @@ export const reducer = (state: State, action: Action | NumberAction): State => {
         ...newState,
         elapsedTime: action.value,
       };
+      break;
+    case ActionType.ShowOneMoreClue:
+      const [
+        nextHiddenClueIndex,
+      ]: number[] = newState.possibleNumbersGrid
+        .map((clue, index) =>
+          clue.level !== null && !clue.isVisible ? index : null
+        )
+        .filter((i) => i);
+
+      if (!nextHiddenClueIndex) {
+        window.alert(
+          "Désolé, il n'y a plus aucune case à découvrir sans faire un pari entre plusieurs chiffres possibles. Bonne chance !"
+        );
+      } else {
+        newState.possibleNumbersGrid[nextHiddenClueIndex].isVisible = true;
+      }
       break;
 
     default:

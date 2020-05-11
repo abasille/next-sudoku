@@ -1,9 +1,19 @@
 import React, { Fragment } from 'react';
 import classnames from 'classnames';
 
-import { ActionType } from '../state';
+import { ActionType, State } from '../state';
 
-const Case = ({ value, index, dispatch, state }) => {
+const Case = ({
+  value,
+  index,
+  dispatch,
+  state,
+}: {
+  value?: number;
+  index: number;
+  dispatch;
+  state: State;
+}) => {
   const isSelected = state.selectedIndex === index;
   const onCaseClicked = (index) => {
     dispatch({ type: ActionType.Click, value: index });
@@ -19,6 +29,7 @@ const Case = ({ value, index, dispatch, state }) => {
   ].includes(index);
   const isError = state.errors.includes(index);
   const isPuzzleValue = state.puzzle[index] !== null;
+  const { isVisible: isVisibleClue } = state.possibleNumbersGrid[index];
 
   return (
     <Fragment>
@@ -28,6 +39,8 @@ const Case = ({ value, index, dispatch, state }) => {
           'is-odd': isOdd,
           'is-error': isError,
           'is-puzzle': isPuzzleValue,
+          'is-trivial': isVisibleClue,
+          [`is-trivial-${state.possibleNumbersGrid[index].level}`]: isVisibleClue,
         })}
         onClick={() => onCaseClicked(index)}
       >
@@ -61,6 +74,11 @@ const Case = ({ value, index, dispatch, state }) => {
         }
         .is-puzzle {
           font-weight: 600;
+        }
+        .is-trivial {
+          border-width: 3px;
+          border-style: dotted;
+          border-color: green;
         }
       `}</style>
     </Fragment>

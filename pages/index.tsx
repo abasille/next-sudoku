@@ -3,9 +3,11 @@ import React, { useReducer, Fragment } from 'react';
 
 import { DIFFICULTY_OPTIONS, STATUS } from '../utils/constants';
 
+import CaseProbabilities from '../components/CaseProbabilities';
 import Grid from '../components/Grid';
 import Keyboard from '../components/Keyboard';
 import Timer from '../components/Timer';
+import IconClue from '../components/IconClue';
 import IconPause from '../components/IconPause';
 import IconPlay from '../components/IconPlay';
 import IconStop from '../components/IconStop';
@@ -13,6 +15,9 @@ import IconStop from '../components/IconStop';
 import { container } from '../theme';
 import { reducer, ActionType } from '../state';
 
+// TODO Meilleure gestion des niveaux de difficulté
+// TODO Plusieurs couleurs pour les cas où plusieurs alternatives possible (afin de pouvoir les retrouver)
+// TODO Améliorer robustesse du localStorage en cas d'évolution + Ne stocker que le necéssaire
 const Home = () => {
   const stateFromLocalStorage =
     typeof window === 'object'
@@ -28,6 +33,7 @@ const Home = () => {
     puzzle: [],
     values: [],
     solution: [],
+    possibleNumbersGrid: undefined,
     rate: undefined,
     errors: [],
     status: STATUS.PENDING,
@@ -106,6 +112,13 @@ const Home = () => {
               <p>Difficulté : {state.rate}</p>
               <button
                 className="btn-icon"
+                onClick={() => dispatch({ type: ActionType.ShowOneMoreClue })}
+                title="Afficher un indice"
+              >
+                <IconClue />
+              </button>
+              <button
+                className="btn-icon"
                 onClick={() => dispatch({ type: ActionType.Check })}
                 title="Vérifier la grille"
               >
@@ -113,6 +126,7 @@ const Home = () => {
               </button>
             </div>
             <Grid dispatch={dispatch} state={state} />
+            {/* <CaseProbabilities state={state} /> */}
             <Keyboard dispatch={dispatch} />
           </Fragment>
         )}
