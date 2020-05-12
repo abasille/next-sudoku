@@ -10,6 +10,10 @@ import {
 
 export type GridHistoryItem = [number, number]; // [index, value]
 
+export interface StateDebug {
+  showPossibilities: boolean;
+}
+
 export interface State {
   difficulty: Difficulty;
   elapsedTime: number;
@@ -22,6 +26,7 @@ export interface State {
   gridValues: number[]; // Current grid
   selectedIndex: number;
   status: Status;
+  debug: StateDebug;
 }
 
 const defaultSelectedIndex: number = 40;
@@ -54,6 +59,9 @@ const initialStateDefault: State = {
   gridValues: [],
   selectedIndex: undefined,
   status: Status.Pending,
+  debug: {
+    showPossibilities: false,
+  },
 };
 
 const reducers = {
@@ -68,7 +76,6 @@ const reducers = {
       elapsedTime: 0,
       gridPossibilities: buildPossibleNumberGrid({
         gridValues: [...gridProblem],
-        gridProblem,
       }),
       gridProblem,
       gridProblemRate,
@@ -147,7 +154,6 @@ const reducers = {
 
       const gridPossibilities = buildPossibleNumberGrid({
         gridValues: gridValues,
-        gridProblem: state.gridProblem,
       });
 
       const isCompleted = gridValues.filter((v) => v).length === 81;
@@ -196,7 +202,6 @@ const reducers = {
 
     const gridPossibilities = buildPossibleNumberGrid({
       gridValues,
-      gridProblem: state.gridProblem,
     });
 
     return {

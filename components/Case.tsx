@@ -23,6 +23,7 @@ const Case = ({ value, index }: { value?: number; index: number }) => {
   const isError = state.gridErrors.includes(index);
   const isProblemValue = state.gridProblem[index] !== null;
   const { isVisible: isVisibleClue } = state.gridPossibilities[index];
+  const casePossibilities = state.gridPossibilities[index];
 
   return (
     <Fragment>
@@ -38,11 +39,17 @@ const Case = ({ value, index }: { value?: number; index: number }) => {
         onClick={() => onCaseClicked(index)}
       >
         {value}
+        {state.debug.showPossibilities && !isProblemValue && (
+          <span className="possibility">
+            {casePossibilities.possibleValues.join(' ')}
+          </span>
+        )}
       </div>
 
       <style jsx>{`
         .case {
           display: flex;
+          position: relative;
           box-sizing: border-box;
           height: 100%;
           justify-content: center;
@@ -76,6 +83,13 @@ const Case = ({ value, index }: { value?: number; index: number }) => {
           border-width: 3px;
           border-style: dotted;
           border-color: green;
+        }
+        .possibility {
+          position: absolute;
+          top: 0;
+          left: 0;
+          color: blue;
+          font-size: 0.65rem;
         }
       `}</style>
     </Fragment>

@@ -25,6 +25,45 @@ const _generateSudoku = (): ISudoku => {
   };
 };
 
+const _generateEasySudoku = (levels: number[]): ISudoku => {
+  const { gridSolution } = _generateSudoku();
+  const gridProblem = [...gridSolution];
+  const getCandidateIndexes = () =>
+    gridProblem.reduce((acc, value, index) => {
+      if (value !== null) acc.push(index);
+      return acc;
+    }, []);
+
+  let candidateCaseIndexes = getCandidateIndexes(); // indexes we could remove in a loop
+
+  while (candidateCaseIndexes.length) {
+    // Remove randomly a case from the solution
+    const randomIndex = Math.round(
+      Math.random() * (candidateCaseIndexes.length - 1)
+    );
+
+    // Remove this case index from candidateCaseIndexes
+    const [candidateCaseIndex] = candidateCaseIndexes.splice(randomIndex, 1);
+    // console.log(candidateCaseIndex, candidateCaseIndexes);
+    gridProblem[candidateCaseIndex] = null;
+
+    const possibleNumberGrid = buildPossibleNumberGrid({
+      gridValues: gridProblem,
+    });
+
+    // IF the clue level is 0 for this empty case
+    if (levels.includes(possibleNumberGrid[candidateCaseIndex].level)) {
+      // THEN rebuild the candidateCaseIndexes & continue
+      candidateCaseIndexes = getCandidateIndexes();
+    } else {
+      // ELSE cancel the deletion and continue
+      gridProblem[candidateCaseIndex] = gridSolution[candidateCaseIndex];
+    }
+  }
+
+  return { gridProblem, gridSolution, gridProblemRate: 0 };
+};
+
 export const generateSudoku = (difficulty: Difficulty): ISudoku => {
   const difficultyIndex = DIFFICULTY_OPTIONS.findIndex(
     (option) => option.value === difficulty
@@ -32,6 +71,9 @@ export const generateSudoku = (difficulty: Difficulty): ISudoku => {
   const { maxRate } = DIFFICULTY_OPTIONS[difficultyIndex];
   const minRate =
     difficultyIndex > 0 ? DIFFICULTY_OPTIONS[difficultyIndex - 1].maxRate : 0;
+
+  if (difficulty === Difficulty.Easy) return _generateEasySudoku([0]);
+  if (difficulty === Difficulty.Average) return _generateEasySudoku([0, 1]);
 
   let _sudoku = _generateSudoku();
 
@@ -63,7 +105,6 @@ export const buildPossibleNumberGrid = ({
   gridValues,
 }: {
   gridValues: number[];
-  gridProblem: number[];
 }): ICasePossibilities[] => {
   const suite = buildSuite();
 
@@ -176,7 +217,7 @@ export const buildPossibleNumberGrid = ({
       // Level 0: from square, line or column
       possibleNumberGrid[caseIndex].level = 0;
     } else if (isEmptyCase && possibleValues.length === 1) {
-      // Level 2: from possible number
+      // Level 1: from possible number
       possibleNumberGrid[caseIndex].level = 1;
     } else {
       possibleNumberGrid[caseIndex].level = null;
