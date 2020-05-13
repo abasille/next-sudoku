@@ -49,10 +49,13 @@ const Case = ({
 
       <style jsx>{`
         .case {
+          display: flex;
+          height: 100%;
+          justify-content: center;
+          align-items: center;
           background-color: #e0e0e0;
           border: 1px solid #fff;
           font-size: 1.5rem;
-          text-align: center;
           cursor: pointer;
           user-select: none;
         }
@@ -61,7 +64,7 @@ const Case = ({
           display: inline-block;
           width: 0;
           height: 0;
-          padding-bottom: calc(100% - 6px);
+          padding-bottom: 100%;
         }
         .is-odd {
           background-color: #bed3be;

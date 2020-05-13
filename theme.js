@@ -1,3 +1,3 @@
 export const container = {
-  maxWidth: '500px',
+  maxWidth: '600px',
 };

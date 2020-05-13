@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 
 import useTimer from '../hooks/useTimer';
 
@@ -19,9 +19,19 @@ const Timer = ({ paused = false, elapsedTimeCb }) => {
   const { h, m, s } = parseTimeMs(elapsedTimeCb());
 
   return (
-    <span>
-      {h}:{('0' + m).slice(-2)}:{('0' + s).slice(-2)}
-    </span>
+    <Fragment>
+      <span className="timer">
+        {h}:{('0' + m).slice(-2)}:{('0' + s).slice(-2)}
+      </span>
+      <style jsx>{`
+        .timer {
+          font-size: 0.75rem;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+      `}</style>
+    </Fragment>
   );
 };
 

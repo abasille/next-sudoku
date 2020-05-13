@@ -6,7 +6,6 @@ import { DIFFICULTY_OPTIONS, STATUS } from '../utils/constants';
 import CaseProbabilities from '../components/CaseProbabilities';
 import Grid from '../components/Grid';
 import Keyboard from '../components/Keyboard';
-import Timer from '../components/Timer';
 import IconClue from '../components/IconClue';
 import IconPause from '../components/IconPause';
 import IconPlay from '../components/IconPlay';
@@ -42,11 +41,6 @@ const Home = () => {
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const elapsedTimeCb = (elapsedTime) =>
-    typeof elapsedTime === 'number'
-      ? dispatch({ type: ActionType.SetElapsedTime, value: elapsedTime })
-      : state.elapsedTime;
-
   return (
     <div className="container">
       <Head>
@@ -56,43 +50,53 @@ const Home = () => {
 
       <header>
         <h1>Sudoku</h1>
-        {state.status === STATUS.PLAYING && (
-          <button
-            className="btn-icon"
-            onClick={() => dispatch({ type: ActionType.Stop })}
-            title="Arrêter"
-          >
-            <IconStop />
-          </button>
-        )}
-        {[STATUS.PAUSED, STATUS.PLAYING].includes(state.status) && (
-          <Timer
-            paused={state.status !== STATUS.PLAYING}
-            elapsedTimeCb={elapsedTimeCb}
-          />
-        )}
         {state.status === STATUS.PAUSED && (
-          <button
-            className="btn-icon"
-            onClick={() => dispatch({ type: ActionType.Play })}
-            title="Jouer"
-          >
-            <IconPlay />
-          </button>
+          <div>
+            <button
+              className="btn-icon"
+              onClick={() => dispatch({ type: ActionType.Stop })}
+              title="Arrêter"
+            >
+              <IconStop />
+            </button>
+            <button
+              className="btn-icon"
+              onClick={() => dispatch({ type: ActionType.Play })}
+              title="Jouer"
+            >
+              <IconPlay />
+            </button>
+          </div>
         )}
         {state.status === STATUS.PLAYING && (
-          <button
-            className="btn-icon"
-            onClick={() => dispatch({ type: ActionType.Pause })}
-            title="Mettre en pause"
-          >
-            <IconPause />
-          </button>
+          <div className="game-controls">
+            <button
+              className="btn-icon"
+              onClick={() => dispatch({ type: ActionType.ShowOneMoreClue })}
+              title="Afficher un indice"
+            >
+              <IconClue />
+            </button>
+            <button
+              className="btn-icon"
+              onClick={() => dispatch({ type: ActionType.Check })}
+              title="Vérifier la grille"
+            >
+              ✔
+            </button>
+            <button
+              className="btn-icon"
+              onClick={() => dispatch({ type: ActionType.Pause })}
+              title="Mettre en pause"
+            >
+              <IconPause />
+            </button>
+          </div>
         )}
       </header>
       <main>
         {state.status === STATUS.PENDING && (
-          <Fragment>
+          <div className="level-selection">
             <p>Choisissez un niveau de difficulté</p>
             {DIFFICULTY_OPTIONS.map((option) => (
               <button
@@ -104,43 +108,28 @@ const Home = () => {
                 {option.label}
               </button>
             ))}
-          </Fragment>
+          </div>
         )}
         {state.status === STATUS.PLAYING && (
           <Fragment>
-            <div className="controls">
+            {/* <div className="controls">
               <p>Difficulté : {state.rate}</p>
-              <button
-                className="btn-icon"
-                onClick={() => dispatch({ type: ActionType.ShowOneMoreClue })}
-                title="Afficher un indice"
-              >
-                <IconClue />
-              </button>
-              <button
-                className="btn-icon"
-                onClick={() => dispatch({ type: ActionType.Check })}
-                title="Vérifier la grille"
-              >
-                ✔
-              </button>
-            </div>
+            </div> */}
             <Grid dispatch={dispatch} state={state} />
             {/* <CaseProbabilities state={state} /> */}
-            <Keyboard dispatch={dispatch} />
+            <Keyboard state={state} dispatch={dispatch} />
           </Fragment>
         )}
       </main>
 
       <style jsx>{`
         .container {
-          min-height: 100vh;
-          padding: 0 0.5rem;
-          margin: auto;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
           align-items: center;
+          margin: auto;
+          min-height: 100vh;
           max-width: ${container.maxWidth};
         }
 
@@ -150,6 +139,10 @@ const Home = () => {
           justify-content: space-between;
           align-items: center;
           width: 100%;
+          margin-bottom: 1rem;
+          padding: 0.25rem 0.5rem;
+          color: #ffffff;
+          background-color: #9bbc9a;
         }
 
         h1 {
@@ -158,13 +151,25 @@ const Home = () => {
         }
 
         main {
-          padding: 0;
-          flex: 1;
           display: flex;
           flex-direction: column;
           justify-content: flex-start;
           align-items: center;
+          flex: 1;
+          padding: 0 0.5rem;
           width: 100%;
+        }
+
+        .level-selection {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          flex: 1;
+        }
+
+        .level-selection button {
+          height: 2rem;
+          margin-bottom: 0.5rem;
         }
 
         .controls {
@@ -173,20 +178,24 @@ const Home = () => {
           width: 100%;
         }
 
+        .game-controls {
+          display: flex;
+        }
+
         .btn-icon {
           width: 2rem;
           height: 2rem;
         }
+        .btn-icon:not(:last-child) {
+          margin-right: 1rem;
+        }
       `}</style>
 
       <style jsx global>{`
-        html,
         body {
           padding: 0;
           margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-            Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
-            sans-serif;
+          font-family: Helvetica Neue, sans-serif;
           font-size: 16px;
         }
 

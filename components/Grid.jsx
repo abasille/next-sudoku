@@ -66,6 +66,7 @@ const Grid = ({ dispatch, state }) => {
           grid-template-columns: repeat(9, 1fr);
           width: 100%;
           max-width: ${container.maxWidth};
+          margin-bottom: 1rem;
         }
       `}</style>
     </div>

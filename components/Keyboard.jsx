@@ -1,31 +1,61 @@
 import React from 'react';
 
 import { ActionType } from '../state';
+import { STATUS } from '../utils/constants';
 
-const Keyboard = ({ dispatch }) => {
+import Timer from '../components/Timer';
+
+const Keyboard = ({ state, dispatch }) => {
+  const elapsedTimeCb = (elapsedTime) =>
+    typeof elapsedTime === 'number'
+      ? dispatch({ type: ActionType.SetElapsedTime, value: elapsedTime })
+      : state.elapsedTime;
+
   return (
     <div className="keyboard">
-      {Array.from({ length: 9 })
-        .map((_, index) => index + 1)
-        .map((v) => (
-          <button
-            key={v}
-            onClick={() => dispatch({ type: ActionType.Number, value: v })}
-          >
-            {v}
-          </button>
-        ))}
-      <button
-        onClick={() => dispatch({ type: ActionType.Number, value: null })}
-      >
-        🗑
-      </button>
+      <div className="numbers">
+        {Array.from({ length: 9 })
+          .map((_, index) => index + 1)
+          .map((v) => (
+            <button
+              key={v}
+              onClick={() => dispatch({ type: ActionType.Number, value: v })}
+            >
+              {v}
+            </button>
+          ))}
+      </div>
+      <div className="controls">
+        <button
+          onClick={() => dispatch({ type: ActionType.Number, value: null })}
+        >
+          🗑
+        </button>
+        <Timer
+          paused={state.status !== STATUS.PLAYING}
+          elapsedTimeCb={elapsedTimeCb}
+        />
+      </div>
       <style jsx>{`
         .keyboard {
+          display: flex;
+          flex-direction: row;
+        }
+        .numbers {
           display: grid;
           grid-template-columns: repeat(3, 40px);
           grid-gap: 0.5rem;
-          margin-top: 0.5rem;
+          margin-right: 2rem;
+        }
+        .controls {
+          display: grid;
+          grid-template-columns: repeat(1, 40px);
+          grid-gap: 0.5rem;
+        }
+        button {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
         }
         button::before {
           content: '';
