@@ -3,7 +3,7 @@ import React, { useReducer, Fragment } from 'react';
 
 import { DIFFICULTY_OPTIONS, STATUS } from '../utils/constants';
 
-import CaseProbabilities from '../components/CaseProbabilities';
+// import CaseProbabilities from '../components/CaseProbabilities';
 import Grid from '../components/Grid';
 import Keyboard from '../components/Keyboard';
 import IconClue from '../components/IconClue';
@@ -22,11 +22,9 @@ const Home = () => {
     typeof window === 'object'
       ? window.localStorage.getItem('state')
       : undefined;
-
   const stateFromLocalStorageObject = stateFromLocalStorage
     ? JSON.parse(stateFromLocalStorage)
     : undefined;
-
   const initialState = stateFromLocalStorageObject || {
     selectedIndex: undefined,
     puzzle: [],
@@ -44,8 +42,13 @@ const Home = () => {
   return (
     <div className="container">
       <Head>
-        <title>Create Next App</title>
+        <title>Next Sudoku</title>
+        <meta
+          name="description"
+          content="Jouez gratuitement au sudoku sur votre PC ou smartphone. Fonctionne sans accès réseau après installation."
+        ></meta>
         <link rel="icon" href="/favicon.ico" />
+        <link rel="manifest" href="/static/manifest.json" />
       </Head>
 
       <header>
