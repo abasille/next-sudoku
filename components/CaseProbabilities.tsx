@@ -1,4 +1,4 @@
-import { State } from '../state';
+import { State } from '../redux/gameSlice';
 
 const CaseProbabilities = ({ state }: { state: State }) => {
   const { selectedIndex, possibleNumbersGrid } = state;

@@ -1,22 +1,15 @@
 import React, { Fragment } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import classnames from 'classnames';
 
-import { ActionType, State } from '../state';
+import gameSlice, { State } from '../redux/gameSlice';
 
-const Case = ({
-  value,
-  index,
-  dispatch,
-  state,
-}: {
-  value?: number;
-  index: number;
-  dispatch;
-  state: State;
-}) => {
+const Case = ({ value, index }: { value?: number; index: number }) => {
+  const dispatch = useDispatch();
+  const state: State = useSelector((state: State) => state);
   const isSelected = state.selectedIndex === index;
   const onCaseClicked = (index) => {
-    dispatch({ type: ActionType.Click, value: index });
+    dispatch(gameSlice.actions.clickCase(index));
   };
   const getSquareIndexes = (offset) =>
     [0, 1, 2, 9, 10, 11, 18, 19, 20].map((i) => i + offset);

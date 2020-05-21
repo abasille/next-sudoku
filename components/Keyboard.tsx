@@ -1,15 +1,21 @@
 import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
-import { ActionType } from '../state';
+import gameSlice, { State } from '../redux/gameSlice';
 import { STATUS } from '../utils/constants';
 
-import Timer from '../components/Timer';
+import Timer from './Timer';
 
-const Keyboard = ({ state, dispatch }) => {
-  const elapsedTimeCb = (elapsedTime) =>
-    typeof elapsedTime === 'number'
-      ? dispatch({ type: ActionType.SetElapsedTime, value: elapsedTime })
-      : state.elapsedTime;
+const Keyboard = () => {
+  const dispatch = useDispatch();
+  const [status, elapsedTime] = useSelector((state: State) => [
+    state.status,
+    state.elapsedTime,
+  ]);
+  const elapsedTimeCb = (newElapsedTime) =>
+    typeof newElapsedTime === 'number'
+      ? dispatch(gameSlice.actions.setElapsedTime(newElapsedTime))
+      : elapsedTime;
 
   return (
     <div className="keyboard">
@@ -19,20 +25,18 @@ const Keyboard = ({ state, dispatch }) => {
           .map((v) => (
             <button
               key={v}
-              onClick={() => dispatch({ type: ActionType.Number, value: v })}
+              onClick={() => dispatch(gameSlice.actions.fillCase(v))}
             >
               {v}
             </button>
           ))}
       </div>
       <div className="controls">
-        <button
-          onClick={() => dispatch({ type: ActionType.Number, value: null })}
-        >
+        <button onClick={() => dispatch(gameSlice.actions.fillCase(null))}>
           🗑
         </button>
         <Timer
-          paused={state.status !== STATUS.PLAYING}
+          paused={status !== STATUS.PLAYING}
           elapsedTimeCb={elapsedTimeCb}
         />
       </div>
