@@ -29,7 +29,7 @@ const Grid = () => {
   };
 
   const dispatch = useDispatch();
-  const values = useSelector((state: State) => state.values);
+  const values: number[] = useSelector((state: State) => state.values);
 
   const handlers = {
     MOVE_UP: () => dispatch(gameSlice.actions.moveUp()),

@@ -1,21 +1,29 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
+import { ElapsedTimeCb } from '../hooks/useTimer';
 import gameSlice, { State } from '../redux/gameSlice';
-import { STATUS } from '../utils/constants';
+import { Status } from '../utils/constants';
 
 import Timer from './Timer';
 
 const Keyboard = () => {
   const dispatch = useDispatch();
-  const [status, elapsedTime] = useSelector((state: State) => [
-    state.status,
-    state.elapsedTime,
-  ]);
-  const elapsedTimeCb = (newElapsedTime) =>
-    typeof newElapsedTime === 'number'
-      ? dispatch(gameSlice.actions.setElapsedTime(newElapsedTime))
-      : elapsedTime;
+  const {
+    status,
+    elapsedTime,
+  }: { status: Status; elapsedTime: number } = useSelector((state: State) => ({
+    status: state.status,
+    elapsedTime: state.elapsedTime,
+  }));
+  const elapsedTimeCb: ElapsedTimeCb = (newElapsedTime) => {
+    if (typeof newElapsedTime === 'number') {
+      dispatch(gameSlice.actions.setElapsedTime(newElapsedTime));
+
+      return newElapsedTime;
+    }
+    return elapsedTime;
+  };
 
   return (
     <div className="keyboard">
@@ -36,7 +44,7 @@ const Keyboard = () => {
           🗑
         </button>
         <Timer
-          paused={status !== STATUS.PLAYING}
+          paused={status !== Status.Playing}
           elapsedTimeCb={elapsedTimeCb}
         />
       </div>

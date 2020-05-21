@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { STATUS, Difficulty } from '../utils/constants';
+import { Status, Difficulty } from '../utils/constants';
 import {
   generateSudoku,
   buildPossibleNumberGrid,
@@ -15,13 +15,13 @@ export interface State {
   possibleNumbersGrid: ICasePossibilities[]; // Possible numbers per case
   rate: number;
   errors: number[];
-  status: string;
+  status: Status;
   elapsedTime: number;
 }
 
 const defaultSelectedIndex: number = 40;
 
-const initialStateDefault = {
+const initialStateDefault: State = {
   selectedIndex: undefined,
   puzzle: [],
   values: [],
@@ -29,7 +29,7 @@ const initialStateDefault = {
   possibleNumbersGrid: undefined,
   rate: undefined,
   errors: [],
-  status: STATUS.PENDING,
+  status: Status.Pending,
   elapsedTime: 0,
 };
 
@@ -47,15 +47,15 @@ const reducers = {
       }),
       solution,
       rate,
-      status: STATUS.PLAYING,
+      status: Status.Playing,
       elapsedTime: 0,
     };
   },
-  playGame: (state: State) => ({ ...state, status: STATUS.PLAYING }),
-  pauseGame: (state: State) => ({ ...state, status: STATUS.PAUSED }),
+  playGame: (state: State) => ({ ...state, status: Status.Playing }),
+  pauseGame: (state: State) => ({ ...state, status: Status.Paused }),
   stopGame: (state: State) => ({
     ...state,
-    status: STATUS.PENDING,
+    status: Status.Pending,
     solution: [],
     puzzle: [],
     values: [],

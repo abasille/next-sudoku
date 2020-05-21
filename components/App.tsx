@@ -2,7 +2,7 @@ import Head from 'next/head';
 import React, { Fragment } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { DIFFICULTY_OPTIONS, STATUS } from '../utils/constants';
+import { DIFFICULTY_OPTIONS, Status } from '../utils/constants';
 
 // import CaseProbabilities from '../components/CaseProbabilities';
 import Grid from '../components/Grid';
@@ -16,7 +16,7 @@ import { container } from '../theme';
 import gameSlice, { State } from '../redux/gameSlice';
 
 const App = () => {
-  const status = useSelector((state: State) => state.status);
+  const status: Status = useSelector((state: State) => state.status);
   const dispatch = useDispatch();
 
   return (
@@ -33,7 +33,7 @@ const App = () => {
 
       <header>
         <h1>Sudoku</h1>
-        {status === STATUS.PAUSED && (
+        {status === Status.Paused && (
           <div>
             <button
               className="btn-icon"
@@ -51,7 +51,7 @@ const App = () => {
             </button>
           </div>
         )}
-        {status === STATUS.PLAYING && (
+        {status === Status.Playing && (
           <div className="game-controls">
             <button
               className="btn-icon"
@@ -78,7 +78,7 @@ const App = () => {
         )}
       </header>
       <main>
-        {status === STATUS.PENDING && (
+        {status === Status.Pending && (
           <div className="level-selection">
             <p>Choisissez un niveau de difficulté</p>
             {DIFFICULTY_OPTIONS.map((option) => (
@@ -93,7 +93,7 @@ const App = () => {
             ))}
           </div>
         )}
-        {status === STATUS.PLAYING && (
+        {status === Status.Playing && (
           <Fragment>
             {/* <div className="controls">
               <p>Difficulté : {state.rate}</p>

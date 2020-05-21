@@ -1,8 +1,18 @@
 import { useEffect, useRef } from 'react';
 
+export type ElapsedTimeCb = (elapsedTime?: number) => number;
+
 // Inspired by https://dev.to/rbreahna/javascript-timer-with-react-hooks-560m
-const useTimer = ({ periodMs, paused, elapsedTimeCb }) => {
-  const initialTimeRef = useRef();
+const useTimer = ({
+  periodMs,
+  paused,
+  elapsedTimeCb,
+}: {
+  periodMs: number;
+  paused: boolean;
+  elapsedTimeCb: ElapsedTimeCb;
+}) => {
+  const initialTimeRef = useRef<number>(null);
 
   useEffect(() => {
     if (!paused) {
@@ -20,7 +30,7 @@ const useTimer = ({ periodMs, paused, elapsedTimeCb }) => {
       return () => {
         clearInterval(id);
         elapsedTimeCb(new Date().getTime() - initialTimeRef.current);
-        initialTimeRef.current = undefined;
+        initialTimeRef.current = null;
       };
     }
   }, [periodMs, paused]);

@@ -8,10 +8,10 @@ const Case = ({ value, index }: { value?: number; index: number }) => {
   const dispatch = useDispatch();
   const state: State = useSelector((state: State) => state);
   const isSelected = state.selectedIndex === index;
-  const onCaseClicked = (index) => {
+  const onCaseClicked = (index: number) => {
     dispatch(gameSlice.actions.clickCase(index));
   };
-  const getSquareIndexes = (offset) =>
+  const getSquareIndexes = (offset: number) =>
     [0, 1, 2, 9, 10, 11, 18, 19, 20].map((i) => i + offset);
   const isOdd = [
     ...getSquareIndexes(0),

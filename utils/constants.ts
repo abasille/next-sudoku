@@ -1,8 +1,8 @@
-export const STATUS = {
-  PENDING: 'PENDING',
-  PLAYING: 'PLAYING',
-  PAUSED: 'PAUSED',
-};
+export enum Status {
+  Pending = 'Pending',
+  Playing = 'Playing',
+  Paused = 'Paused',
+}
 
 export enum Difficulty {
   Easy = 'Easy',

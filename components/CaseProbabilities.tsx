@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { State } from '../redux/gameSlice';
 
 const CaseProbabilities = ({ state }: { state: State }) => {

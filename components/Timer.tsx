@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react';
 
-import useTimer from '../hooks/useTimer';
+import useTimer, { ElapsedTimeCb } from '../hooks/useTimer';
 
-const parseTimeMs = (timeMs) => {
+const parseTimeMs = (timeMs: number): { h: number; m: number; s: number } => {
   const secs = Math.round(timeMs / 1000);
   const h = Math.floor(secs / (60 * 60));
   const divisor_for_minutes = secs % (60 * 60);
@@ -13,7 +13,13 @@ const parseTimeMs = (timeMs) => {
   return { h, m, s };
 };
 
-const Timer = ({ paused = false, elapsedTimeCb }) => {
+const Timer = ({
+  paused = false,
+  elapsedTimeCb,
+}: {
+  paused: boolean;
+  elapsedTimeCb: ElapsedTimeCb;
+}) => {
   useTimer({ periodMs: 1000, paused, elapsedTimeCb });
 
   const { h, m, s } = parseTimeMs(elapsedTimeCb());
