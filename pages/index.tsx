@@ -8,9 +8,11 @@ import gameSlice from '../redux/gameSlice';
 
 const store = configureStore({ reducer: gameSlice.reducer });
 
+// TODO Séparer pages : home, game
+// TODO Annulation de l'historique
 // TODO Meilleure gestion des niveaux de difficulté
 // TODO Plusieurs couleurs pour les cas où plusieurs alternatives possible (afin de pouvoir les retrouver)
-// TODO Améliorer robustesse du localStorage en cas d'évolution + Ne stocker que le necéssaire
+// TODO Stocker le state dans localStorage (redux-persist) + gestion des évolutions de format
 const Index = () => {
   // const stateFromLocalStorage =
   //   typeof window === 'object'
