@@ -7,6 +7,7 @@ n'avais pas encore eu l'occasion d'utiliser (ou trop peu) :
 - [CSS Grid](https://developer.mozilla.org/fr/docs/Web/CSS/CSS_Grid_Layout)
 - [PWA](https://developer.mozilla.org/fr/docs/Web/Progressive_web_apps)
 - [Redux](https://redux.js.org/), [React Redux](https://react-redux.js.org/) & [Redux Toolkit](https://redux-toolkit.js.org/)
+- [lint-staged](https://github.com/okonet/lint-staged#readme) & [husky](https://github.com/typicode/husky)
 
 Prochaine intégration : [Redux Persist](https://github.com/rt2zz/redux-persist)
 
