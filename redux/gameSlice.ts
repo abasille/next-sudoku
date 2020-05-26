@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { MakeStore, createWrapper, Context, HYDRATE } from 'next-redux-wrapper';
 
 import { Status, Difficulty } from '../utils/constants';
 import {
@@ -153,10 +154,25 @@ const reducers = {
       state.possibleNumbersGrid[nextHiddenClueIndex].isVisible = true;
     }
   },
+  [HYDRATE]: (state: State, action: PayloadAction<any>) => {
+    // TODO Attention! This will overwrite client state! Real apps should use proper reconciliation.
+    return {
+      ...state,
+      ...action.payload,
+    };
+  },
 };
 
-export default createSlice({
+const gameSlice = createSlice({
   name: 'game',
   initialState: initialStateDefault,
   reducers,
 });
+
+// eslint-disable-next-line no-unused-vars
+const makeStore: MakeStore<State> = (context: Context) =>
+  configureStore({ reducer: gameSlice.reducer });
+
+export const gameWrapper = createWrapper<State>(makeStore, { debug: true });
+
+export default gameSlice;

@@ -1,12 +1,6 @@
 import React from 'react';
-import { configureStore } from '@reduxjs/toolkit';
-import { Provider } from 'react-redux';
 
 import App from '../components/App';
-
-import gameSlice from '../redux/gameSlice';
-
-const store = configureStore({ reducer: gameSlice.reducer });
 
 // TODO Séparer pages : home, game
 // TODO Annulation de l'historique
@@ -23,11 +17,7 @@ const Index = () => {
   //   : undefined;
   // const initialState = stateFromLocalStorageObject || initialStateDefault;
 
-  return (
-    <Provider store={store}>
-      <App />
-    </Provider>
-  );
+  return <App />;
 };
 
 export default Index;
