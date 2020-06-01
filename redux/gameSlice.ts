@@ -8,10 +8,13 @@ import {
   ICasePossibilities,
 } from '../utils/generator';
 
+export type GridHistoryItem = [number, number]; // [index, value]
+
 export interface State {
   difficulty: Difficulty;
   elapsedTime: number;
   gridErrors: number[];
+  gridHistory: GridHistoryItem[];
   gridPossibilities: ICasePossibilities[]; // Possible numbers per case
   gridProblem: number[]; // Initial grid
   gridProblemRate: number;
@@ -41,15 +44,16 @@ const getErrors = ({
 
 const initialStateDefault: State = {
   difficulty: undefined,
-  selectedIndex: undefined,
-  gridProblem: [],
-  gridValues: [],
-  gridSolution: [],
-  gridPossibilities: undefined,
-  gridProblemRate: undefined,
-  gridErrors: [],
-  status: Status.Pending,
   elapsedTime: 0,
+  gridErrors: [],
+  gridHistory: [],
+  gridPossibilities: undefined,
+  gridProblem: [],
+  gridProblemRate: undefined,
+  gridSolution: [],
+  gridValues: [],
+  selectedIndex: undefined,
+  status: Status.Pending,
 };
 
 const reducers = {
@@ -127,6 +131,7 @@ const reducers = {
   }),
   fillCase: (state: State, action: PayloadAction<number>) => {
     if (state.selectedIndex !== undefined) {
+      const gridHistory = [...state.gridHistory];
       const gridValues = [...state.gridValues];
       let status = state.status;
       // Unset the error for this index
@@ -137,6 +142,7 @@ const reducers = {
       // Set the value if not an initial value
       if (state.gridProblem[state.selectedIndex] === null) {
         gridValues[state.selectedIndex] = action.payload;
+        gridHistory.push([state.selectedIndex, action.payload]);
       }
 
       const gridPossibilities = buildPossibleNumberGrid({
@@ -161,11 +167,46 @@ const reducers = {
       return {
         ...state,
         gridErrors,
+        gridHistory,
         gridPossibilities,
-        status,
         gridValues,
+        status,
       };
     }
+  },
+  undoFillCase: (state: State) => {
+    const gridHistory = [...state.gridHistory];
+    const gridValues = [...state.gridValues];
+    let selectedIndex = state.selectedIndex;
+
+    const [caseIndexToUndo] = gridHistory.pop() || [];
+
+    if (typeof caseIndexToUndo === 'number') {
+      gridValues[caseIndexToUndo] = null;
+      selectedIndex = caseIndexToUndo;
+    }
+
+    const [caseIndexToRestore, caseValueToRestore] =
+      gridHistory[gridHistory.length - 1] || [];
+
+    if (typeof caseIndexToRestore === 'number') {
+      gridValues[caseIndexToRestore] = caseValueToRestore;
+      selectedIndex = caseIndexToRestore;
+    }
+
+    const gridPossibilities = buildPossibleNumberGrid({
+      gridValues,
+      gridProblem: state.gridProblem,
+    });
+
+    return {
+      ...state,
+      gridErrors: [],
+      gridHistory,
+      gridPossibilities,
+      gridValues,
+      selectedIndex,
+    };
   },
   checkGame: (state: State) => ({
     ...state,

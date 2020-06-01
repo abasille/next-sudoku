@@ -26,6 +26,7 @@ const Grid = () => {
     9: '9',
     CHECK: 'v',
     SHOW_ONE_CLUE: 'h',
+    UNDO: 'z',
   };
 
   const dispatch = useDispatch();
@@ -48,6 +49,7 @@ const Grid = () => {
     DEL: () => dispatch(gameSlice.actions.fillCase(null)),
     CHECK: () => dispatch(gameSlice.actions.checkGame()),
     SHOW_ONE_CLUE: () => dispatch(gameSlice.actions.showOneMoreClue()),
+    UNDO: () => dispatch(gameSlice.actions.undoFillCase()),
   };
 
   return (

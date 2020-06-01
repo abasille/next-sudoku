@@ -7,10 +7,13 @@ import IconPause from './IconPause';
 import IconPlay from './IconPlay';
 import IconStop from './IconStop';
 import { Status } from '../utils/constants';
-import gameSlice, { State } from '../redux/gameSlice';
+import gameSlice, { State, GridHistoryItem } from '../redux/gameSlice';
 
 const Header = () => {
-  const status: Status = useSelector((state: State) => state.status);
+  const [status, gridHistory]: [
+    Status,
+    GridHistoryItem[]
+  ] = useSelector((state: State) => [state.status, state.gridHistory]);
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -51,6 +54,14 @@ const Header = () => {
             title="Vérifier la grille"
           >
             ✔
+          </button>
+          <button
+            className="btn-icon"
+            onClick={() => dispatch(gameSlice.actions.undoFillCase())}
+            title="Annuler le dernier coup"
+            disabled={gridHistory.length === 0}
+          >
+            ↶
           </button>
           <button
             className="btn-icon"
