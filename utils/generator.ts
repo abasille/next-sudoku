@@ -6,22 +6,22 @@ import { getLineIndexes, getLineIndex } from '../api/lineHelpers';
 import { getSquareIndexes, getSquareIndex } from '../api/squareHelpers';
 
 interface ISudoku {
-  puzzle: number[];
-  solution: number[];
-  rate: number;
+  gridProblem: number[];
+  gridSolution: number[];
+  gridProblemRate: number;
 }
 
 const _generateSudoku = (): ISudoku => {
-  const puzzle = sudoku.makepuzzle();
-  const solution = sudoku.solvepuzzle(puzzle);
-  const rate = sudoku.ratepuzzle(puzzle, 4); // TODO Adjust sample
+  const gridProblem = sudoku.makepuzzle();
+  const gridSolution = sudoku.solvepuzzle(gridProblem);
+  const gridProblemRate = sudoku.ratepuzzle(gridProblem, 4); // TODO Adjust sample
 
-  console.log('_generateSudoku() - rate: ', rate);
+  console.log('_generateSudoku() - gridProblemRate: ', gridProblemRate);
 
   return {
-    puzzle: puzzle.map((v) => (v !== null ? v + 1 : null)),
-    solution: solution.map((v) => v + 1),
-    rate,
+    gridProblem: gridProblem.map((v) => (v !== null ? v + 1 : null)),
+    gridSolution: gridSolution.map((v) => v + 1),
+    gridProblemRate,
   };
 };
 
@@ -37,7 +37,10 @@ export const generateSudoku = (difficulty: Difficulty): ISudoku => {
 
   console.log('maxRate: ', maxRate);
 
-  while (_sudoku.rate < minRate || _sudoku.rate >= maxRate) {
+  while (
+    _sudoku.gridProblemRate < minRate ||
+    _sudoku.gridProblemRate >= maxRate
+  ) {
     _sudoku = _generateSudoku();
   }
 
@@ -60,7 +63,7 @@ export const buildPossibleNumberGrid = ({
   gridValues,
 }: {
   gridValues: number[];
-  puzzle: number[];
+  gridProblem: number[];
 }): ICasePossibilities[] => {
   const suite = buildSuite();
 

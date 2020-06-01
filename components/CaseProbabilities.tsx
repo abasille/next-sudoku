@@ -3,14 +3,14 @@ import React from 'react';
 import { State } from '../redux/gameSlice';
 
 const CaseProbabilities = ({ state }: { state: State }) => {
-  const { selectedIndex, possibleNumbersGrid } = state;
+  const { selectedIndex, gridPossibilities } = state;
 
   const {
     possibleValues,
     necessaryValuesFromSquare,
     necessaryValuesFromLine,
     necessaryValuesFromColumn,
-  } = possibleNumbersGrid[selectedIndex];
+  } = gridPossibilities[selectedIndex];
 
   return (
     <p>

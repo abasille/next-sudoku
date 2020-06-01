@@ -10,15 +10,15 @@ import {
 
 export interface State {
   difficulty: Difficulty;
-  selectedIndex: number;
-  puzzle: number[]; // Initial grid
-  values: number[]; // Current grid
-  solution: number[]; // Solution grid
-  possibleNumbersGrid: ICasePossibilities[]; // Possible numbers per case
-  rate: number;
-  errors: number[];
-  status: Status;
   elapsedTime: number;
+  gridErrors: number[];
+  gridPossibilities: ICasePossibilities[]; // Possible numbers per case
+  gridProblem: number[]; // Initial grid
+  gridProblemRate: number;
+  gridSolution: number[]; // Solution grid
+  gridValues: number[]; // Current grid
+  selectedIndex: number;
+  status: Status;
 }
 
 const defaultSelectedIndex: number = 40;
@@ -27,49 +27,51 @@ const ensureSelectedIndex = (selectedIndex) =>
   typeof selectedIndex === 'number' ? selectedIndex : defaultSelectedIndex;
 
 const getErrors = ({
-  solution,
-  values,
+  gridSolution,
+  gridValues,
 }: {
-  solution: number[];
-  values: number[];
+  gridSolution: number[];
+  gridValues: number[];
 }): number[] =>
-  solution.reduce((errors, solValue, index) => {
-    if (values[index] !== null && values[index] !== solValue)
-      errors.push(index);
-    return errors;
+  gridSolution.reduce((gridErrors, solValue, index) => {
+    if (gridValues[index] !== null && gridValues[index] !== solValue)
+      gridErrors.push(index);
+    return gridErrors;
   }, []);
 
 const initialStateDefault: State = {
   difficulty: undefined,
   selectedIndex: undefined,
-  puzzle: [],
-  values: [],
-  solution: [],
-  possibleNumbersGrid: undefined,
-  rate: undefined,
-  errors: [],
+  gridProblem: [],
+  gridValues: [],
+  gridSolution: [],
+  gridPossibilities: undefined,
+  gridProblemRate: undefined,
+  gridErrors: [],
   status: Status.Pending,
   elapsedTime: 0,
 };
 
 const reducers = {
   startGame: (state: State, action: PayloadAction<Difficulty>) => {
-    const { puzzle, solution, rate } = generateSudoku(action.payload);
+    const { gridProblem, gridSolution, gridProblemRate } = generateSudoku(
+      action.payload
+    );
 
     return {
       ...state,
       difficulty: action.payload,
       elapsedTime: 0,
-      possibleNumbersGrid: buildPossibleNumberGrid({
-        gridValues: [...puzzle],
-        puzzle,
+      gridPossibilities: buildPossibleNumberGrid({
+        gridValues: [...gridProblem],
+        gridProblem,
       }),
-      puzzle,
-      rate,
+      gridProblem,
+      gridProblemRate,
       selectedIndex: defaultSelectedIndex,
-      solution,
+      gridSolution,
       status: Status.Playing,
-      values: [...puzzle],
+      gridValues: [...gridProblem],
     };
   },
   playGame: (state: State) => ({ ...state, status: Status.Playing }),
@@ -77,10 +79,10 @@ const reducers = {
   stopGame: (state: State) => ({
     ...state,
     status: Status.Pending,
-    solution: [],
-    puzzle: [],
-    values: [],
-    rate: undefined,
+    gridSolution: [],
+    gridProblem: [],
+    gridValues: [],
+    gridProblemRate: undefined,
   }),
   moveUp: (state: State) => {
     const selectedIndex = ensureSelectedIndex(state.selectedIndex);
@@ -125,27 +127,32 @@ const reducers = {
   }),
   fillCase: (state: State, action: PayloadAction<number>) => {
     if (state.selectedIndex !== undefined) {
-      const values = [...state.values];
+      const gridValues = [...state.gridValues];
       let status = state.status;
       // Unset the error for this index
-      let errors = state.errors.filter((i) => i !== state.selectedIndex);
+      let gridErrors = state.gridErrors.filter(
+        (i) => i !== state.selectedIndex
+      );
 
       // Set the value if not an initial value
-      if (state.puzzle[state.selectedIndex] === null) {
-        values[state.selectedIndex] = action.payload;
+      if (state.gridProblem[state.selectedIndex] === null) {
+        gridValues[state.selectedIndex] = action.payload;
       }
 
-      const possibleNumbersGrid = buildPossibleNumberGrid({
-        gridValues: values,
-        puzzle: state.puzzle,
+      const gridPossibilities = buildPossibleNumberGrid({
+        gridValues: gridValues,
+        gridProblem: state.gridProblem,
       });
 
-      const isCompleted = values.filter((v) => v).length === 81;
+      const isCompleted = gridValues.filter((v) => v).length === 81;
 
       if (isCompleted) {
-        errors = getErrors({ solution: state.solution, values });
+        gridErrors = getErrors({
+          gridSolution: state.gridSolution,
+          gridValues,
+        });
 
-        if (errors.length === 0) {
+        if (gridErrors.length === 0) {
           // You win!
           status = Status.Completed;
         }
@@ -153,16 +160,19 @@ const reducers = {
 
       return {
         ...state,
-        errors,
-        possibleNumbersGrid,
+        gridErrors,
+        gridPossibilities,
         status,
-        values,
+        gridValues,
       };
     }
   },
   checkGame: (state: State) => ({
     ...state,
-    errors: getErrors({ solution: state.solution, values: state.values }),
+    gridErrors: getErrors({
+      gridSolution: state.gridSolution,
+      gridValues: state.gridValues,
+    }),
   }),
   setElapsedTime: (state: State, action: PayloadAction<number>) => ({
     ...state,
@@ -171,7 +181,7 @@ const reducers = {
   showOneMoreClue: (state: State) => {
     const [
       nextHiddenClueIndex,
-    ]: number[] = state.possibleNumbersGrid
+    ]: number[] = state.gridPossibilities
       .map((clue, index) =>
         clue.level !== null && !clue.isVisible ? index : null
       )
@@ -182,7 +192,7 @@ const reducers = {
         "Désolé, il n'y a plus aucune case à découvrir sans faire un pari entre plusieurs chiffres possibles. Bonne chance !"
       );
     } else {
-      state.possibleNumbersGrid[nextHiddenClueIndex].isVisible = true;
+      state.gridPossibilities[nextHiddenClueIndex].isVisible = true;
       state.selectedIndex = nextHiddenClueIndex;
     }
   },

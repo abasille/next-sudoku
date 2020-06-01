@@ -20,9 +20,9 @@ const Case = ({ value, index }: { value?: number; index: number }) => {
     ...getSquareIndexes(54),
     ...getSquareIndexes(60),
   ].includes(index);
-  const isError = state.errors.includes(index);
-  const isPuzzleValue = state.puzzle[index] !== null;
-  const { isVisible: isVisibleClue } = state.possibleNumbersGrid[index];
+  const isError = state.gridErrors.includes(index);
+  const isProblemValue = state.gridProblem[index] !== null;
+  const { isVisible: isVisibleClue } = state.gridPossibilities[index];
 
   return (
     <Fragment>
@@ -31,9 +31,9 @@ const Case = ({ value, index }: { value?: number; index: number }) => {
           'is-selected': isSelected,
           'is-odd': isOdd,
           'is-error': isError,
-          'is-puzzle': isPuzzleValue,
+          'is-problem': isProblemValue,
           'is-trivial': isVisibleClue,
-          [`is-trivial-${state.possibleNumbersGrid[index].level}`]: isVisibleClue,
+          [`is-trivial-${state.gridPossibilities[index].level}`]: isVisibleClue,
         })}
         onClick={() => onCaseClicked(index)}
       >
@@ -69,7 +69,7 @@ const Case = ({ value, index }: { value?: number; index: number }) => {
         .is-error {
           color: #e00000;
         }
-        .is-puzzle {
+        .is-problem {
           font-weight: 600;
         }
         .is-trivial {

@@ -29,7 +29,7 @@ const Grid = () => {
   };
 
   const dispatch = useDispatch();
-  const values: number[] = useSelector((state: State) => state.values);
+  const gridValues: number[] = useSelector((state: State) => state.gridValues);
 
   const handlers = {
     MOVE_UP: () => dispatch(gameSlice.actions.moveUp()),
@@ -54,7 +54,7 @@ const Grid = () => {
     <div className="grid">
       <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
 
-      {values.map((value, index) => (
+      {gridValues.map((value, index) => (
         <Case key={index} value={value} index={index} />
       ))}
 
