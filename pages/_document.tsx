@@ -23,10 +23,6 @@ class MyDocument extends Document {
             font-family: Helvetica Neue, sans-serif;
             font-size: 16px;
           }
-
-          * {
-            box-sizing: border-box;
-          }
         `}</style>
       </Html>
     );

@@ -10,7 +10,6 @@ import AppMain from '../components/AppMain';
 
 import gameSlice, { State } from '../redux/gameSlice';
 
-// TODO Sélectionner la case indice
 // TODO Annulation des derniers coups
 // TODO Amélioration des niveaux de difficulté
 // TODO Plusieurs couleurs pour les cas où plusieurs alternatives possible (afin de pouvoir les retrouver)

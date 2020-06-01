@@ -43,6 +43,7 @@ const Case = ({ value, index }: { value?: number; index: number }) => {
       <style jsx>{`
         .case {
           display: flex;
+          box-sizing: border-box;
           height: 100%;
           justify-content: center;
           align-items: center;

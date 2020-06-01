@@ -183,6 +183,7 @@ const reducers = {
       );
     } else {
       state.possibleNumbersGrid[nextHiddenClueIndex].isVisible = true;
+      state.selectedIndex = nextHiddenClueIndex;
     }
   },
   [HYDRATE]: (state: State, action: PayloadAction<any>) => {
