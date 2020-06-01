@@ -22,6 +22,9 @@ export interface State {
 
 const defaultSelectedIndex: number = 40;
 
+const ensureSelectedIndex = (selectedIndex) =>
+  typeof selectedIndex === 'number' ? selectedIndex : defaultSelectedIndex;
+
 const initialStateDefault: State = {
   selectedIndex: undefined,
   puzzle: [],
@@ -63,7 +66,7 @@ const reducers = {
     rate: undefined,
   }),
   moveUp: (state: State) => {
-    const selectedIndex = state.selectedIndex || defaultSelectedIndex;
+    const selectedIndex = ensureSelectedIndex(state.selectedIndex);
 
     return {
       ...state,
@@ -72,7 +75,7 @@ const reducers = {
     };
   },
   moveDown: (state: State) => {
-    const selectedIndex = state.selectedIndex || defaultSelectedIndex;
+    const selectedIndex = ensureSelectedIndex(state.selectedIndex);
 
     return {
       ...state,
@@ -81,7 +84,7 @@ const reducers = {
     };
   },
   moveRight: (state: State) => {
-    const selectedIndex = state.selectedIndex || defaultSelectedIndex;
+    const selectedIndex = ensureSelectedIndex(state.selectedIndex);
 
     return {
       ...state,
@@ -90,7 +93,7 @@ const reducers = {
     };
   },
   moveLeft: (state: State) => {
-    const selectedIndex = state.selectedIndex || defaultSelectedIndex;
+    const selectedIndex = ensureSelectedIndex(state.selectedIndex);
 
     return {
       ...state,
