@@ -9,6 +9,7 @@ import {
 } from '../utils/generator';
 
 export interface State {
+  difficulty: Difficulty;
   selectedIndex: number;
   puzzle: number[]; // Initial grid
   values: number[]; // Current grid
@@ -25,7 +26,21 @@ const defaultSelectedIndex: number = 40;
 const ensureSelectedIndex = (selectedIndex) =>
   typeof selectedIndex === 'number' ? selectedIndex : defaultSelectedIndex;
 
+const getErrors = ({
+  solution,
+  values,
+}: {
+  solution: number[];
+  values: number[];
+}): number[] =>
+  solution.reduce((errors, solValue, index) => {
+    if (values[index] !== null && values[index] !== solValue)
+      errors.push(index);
+    return errors;
+  }, []);
+
 const initialStateDefault: State = {
+  difficulty: undefined,
   selectedIndex: undefined,
   puzzle: [],
   values: [],
@@ -43,16 +58,18 @@ const reducers = {
 
     return {
       ...state,
-      puzzle,
-      values: [...puzzle],
+      difficulty: action.payload,
+      elapsedTime: 0,
       possibleNumbersGrid: buildPossibleNumberGrid({
         gridValues: [...puzzle],
         puzzle,
       }),
-      solution,
+      puzzle,
       rate,
+      selectedIndex: defaultSelectedIndex,
+      solution,
       status: Status.Playing,
-      elapsedTime: 0,
+      values: [...puzzle],
     };
   },
   playGame: (state: State) => ({ ...state, status: Status.Playing }),
@@ -109,32 +126,43 @@ const reducers = {
   fillCase: (state: State, action: PayloadAction<number>) => {
     if (state.selectedIndex !== undefined) {
       const values = [...state.values];
+      let status = state.status;
       // Unset the error for this index
-      const errors = state.errors.filter((i) => i !== state.selectedIndex);
+      let errors = state.errors.filter((i) => i !== state.selectedIndex);
 
       // Set the value if not an initial value
       if (state.puzzle[state.selectedIndex] === null) {
         values[state.selectedIndex] = action.payload;
       }
 
+      const possibleNumbersGrid = buildPossibleNumberGrid({
+        gridValues: values,
+        puzzle: state.puzzle,
+      });
+
+      const isCompleted = values.filter((v) => v).length === 81;
+
+      if (isCompleted) {
+        errors = getErrors({ solution: state.solution, values });
+
+        if (errors.length === 0) {
+          // You win!
+          status = Status.Completed;
+        }
+      }
+
       return {
         ...state,
-        possibleNumbersGrid: buildPossibleNumberGrid({
-          gridValues: values,
-          puzzle: state.puzzle,
-        }),
         errors,
+        possibleNumbersGrid,
+        status,
         values,
       };
     }
   },
   checkGame: (state: State) => ({
     ...state,
-    errors: state.solution.reduce((errors, solValue, index) => {
-      if (state.values[index] !== null && state.values[index] !== solValue)
-        errors.push(index);
-      return errors;
-    }, []),
+    errors: getErrors({ solution: state.solution, values: state.values }),
   }),
   setElapsedTime: (state: State, action: PayloadAction<number>) => ({
     ...state,

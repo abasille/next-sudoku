@@ -2,6 +2,7 @@ export enum Status {
   Pending = 'Pending',
   Playing = 'Playing',
   Paused = 'Paused',
+  Completed = 'Completed',
 }
 
 export enum Difficulty {

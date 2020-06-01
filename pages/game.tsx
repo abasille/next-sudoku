@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
 
 import { Status } from '../utils/constants';
@@ -13,6 +14,15 @@ import { State } from '../redux/gameSlice';
 
 const App = () => {
   const status: Status = useSelector((state: State) => state.status);
+  const router = useRouter();
+
+  if (status === Status.Completed) {
+    router.push('/completed');
+  }
+
+  if (![Status.Completed, Status.Playing].includes(status)) {
+    router.push('/');
+  }
 
   return (
     <AppContainer>
