@@ -12,9 +12,15 @@ const Keyboard = () => {
   const {
     status,
     elapsedTime,
-  }: { status: Status; elapsedTime: number } = useSelector((state: State) => ({
+    selectedColor,
+  }: {
+    status: Status;
+    elapsedTime: number;
+    selectedColor: string;
+  } = useSelector((state: State) => ({
     status: state.status,
     elapsedTime: state.elapsedTime,
+    selectedColor: state.selectedColor,
   }));
   const elapsedTimeCb: ElapsedTimeCb = (newElapsedTime) => {
     if (typeof newElapsedTime === 'number') {
@@ -42,6 +48,16 @@ const Keyboard = () => {
       <div className="controls">
         <button onClick={() => dispatch(gameSlice.actions.fillCase(null))}>
           🗑
+        </button>
+        <button onClick={() => dispatch(gameSlice.actions.selectNextColor())}>
+          <strong
+            style={{
+              color: selectedColor,
+              fontSize: '2rem',
+            }}
+          >
+            ●
+          </strong>
         </button>
         <Timer
           paused={status !== Status.Playing}

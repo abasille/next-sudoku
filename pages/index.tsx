@@ -10,10 +10,9 @@ import AppMain from '../components/AppMain';
 
 import gameSlice, { State } from '../redux/gameSlice';
 
-// TODO Amélioration des niveaux de difficulté
-// TODO Plusieurs couleurs pour les cas où plusieurs alternatives possible (afin de pouvoir les retrouver)
 // TODO FIX useRouter is not supported on server
 // TODO Stocker le state dans localStorage (redux-persist) + gestion des évolutions de format
+// TODO Amélioration des niveaux de difficulté (difficult & insane)
 const Index = () => {
   const status: Status = useSelector((state: State) => state.status);
   const dispatch = useDispatch();

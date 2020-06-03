@@ -38,7 +38,7 @@ const Case = ({ value, index }: { value?: number; index: number }) => {
         })}
         onClick={() => onCaseClicked(index)}
       >
-        {value}
+        <span style={{ color: state.gridColors[index] }}>{value}</span>
         {state.debug.showPossibilities && !isProblemValue && (
           <span className="possibility">
             {casePossibilities.possibleValues.join(' ')}

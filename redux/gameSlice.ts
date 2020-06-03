@@ -1,7 +1,7 @@
 import { configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { MakeStore, createWrapper, Context, HYDRATE } from 'next-redux-wrapper';
 
-import { Status, Difficulty } from '../utils/constants';
+import { Status, Difficulty, FILL_COLORS } from '../utils/constants';
 import {
   generateSudoku,
   buildPossibleNumberGrid,
@@ -17,6 +17,7 @@ export interface StateDebug {
 export interface State {
   difficulty: Difficulty;
   elapsedTime: number;
+  gridColors: string[];
   gridErrors: number[];
   gridHistory: GridHistoryItem[];
   gridPossibilities: ICasePossibilities[]; // Possible numbers per case
@@ -25,6 +26,7 @@ export interface State {
   gridSolution: number[]; // Solution grid
   gridValues: number[]; // Current grid
   selectedIndex: number;
+  selectedColor: string;
   status: Status;
   debug: StateDebug;
 }
@@ -50,6 +52,7 @@ const getErrors = ({
 const initialStateDefault: State = {
   difficulty: undefined,
   elapsedTime: 0,
+  gridColors: Array.from({ length: 81 }).map(() => FILL_COLORS[0]),
   gridErrors: [],
   gridHistory: [],
   gridPossibilities: undefined,
@@ -58,6 +61,7 @@ const initialStateDefault: State = {
   gridSolution: [],
   gridValues: [],
   selectedIndex: undefined,
+  selectedColor: FILL_COLORS[0],
   status: Status.Pending,
   debug: {
     showPossibilities: false,
@@ -136,8 +140,20 @@ const reducers = {
     selectedIndex:
       action.payload === state.selectedIndex ? undefined : action.payload,
   }),
+  selectNextColor: (state: State) => {
+    const selectedColorIndex = FILL_COLORS.findIndex(
+      (c) => c === state.selectedColor
+    );
+    const nextColorIndex = (selectedColorIndex + 1) % FILL_COLORS.length;
+
+    return {
+      ...state,
+      selectedColor: FILL_COLORS[nextColorIndex],
+    };
+  },
   fillCase: (state: State, action: PayloadAction<number>) => {
     if (state.selectedIndex !== undefined) {
+      const gridColors = [...state.gridColors];
       const gridHistory = [...state.gridHistory];
       const gridValues = [...state.gridValues];
       let status = state.status;
@@ -149,6 +165,7 @@ const reducers = {
       // Set the value if not an initial value
       if (state.gridProblem[state.selectedIndex] === null) {
         gridValues[state.selectedIndex] = action.payload;
+        gridColors[state.selectedIndex] = state.selectedColor;
         gridHistory.push([state.selectedIndex, action.payload]);
       }
 
@@ -172,6 +189,7 @@ const reducers = {
 
       return {
         ...state,
+        gridColors,
         gridErrors,
         gridHistory,
         gridPossibilities,
